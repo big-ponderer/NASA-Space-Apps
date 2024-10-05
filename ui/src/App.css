@@ -112,3 +112,32 @@ iframe {
   background-color: #000;
 }
 
+.button {
+  background-color: #000; /* Dark background to match the theme */
+  color: #39ff14; /* Neon green text */
+  border: 2px solid #39ff14; /* Neon green border */
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-family: 'Orbitron', sans-serif; /* Keep the futuristic font */
+  letter-spacing: 2px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+  box-shadow: 0px 0px 15px rgba(57, 255, 20, 0.5); /* Neon glow */
+  text-transform: uppercase; /* Make the text appear bold */
+  width: 90%;
+}
+
+/* Hover effect */
+.button:hover {
+  background-color: #39ff14; /* Neon green background on hover */
+  color: #000; /* Invert text color to black */
+  box-shadow: 0px 0px 25px rgba(57, 255, 20, 1); /* Increase the glow */
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+/* Active button state */
+.button:active {
+  transform: scale(0.98); /* Shrink slightly to give a "pressed" effect */
+  box-shadow: 0px 0px 5px rgba(57, 255, 20, 0.8); /* Less intense glow */
+}
