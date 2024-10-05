@@ -1,25 +1,20 @@
 import logo from './logo.svg';
 import './App.css';
+import Display from './components/Display';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => <div className="App">
+  <header className="header">
+    <h1 className="title">Orrery</h1>
+    <p className="subtitle">use your cursor to look around. press W to move forard and S to move backward</p>
+  </header>
+
+  <div className="simulator-container">
+    <Display />
+  </div>
+
+  <footer className="footer">
+    <p className="footer-text">Created for the NASA Space Apps Challenge &copy; 2024</p>
+  </footer>
+</div>
 
 export default App;
