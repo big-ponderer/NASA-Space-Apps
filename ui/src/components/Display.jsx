@@ -7,6 +7,7 @@ const sketch = (p) => {
     let angleY = 0;
     let moveSpeed = 5;
     let data;
+    let img;
 
     p.setup = () => {
         //dummy data
@@ -38,9 +39,9 @@ const sketch = (p) => {
 
     p.draw = () => {
         //space purple
-        p.background(25, 25, 112);
+        p.background(10, 10, 44);
         p.ambientLight(100);
-        p.pointLight(255, 255, 255, 0, 0, 0)
+        p.pointLight(75, 75, 75, 0, 0, 0)
 
         angleX += (p.movedX * 0.01);
         angleY += (p.movedY * 0.01);
