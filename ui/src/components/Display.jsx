@@ -88,6 +88,10 @@ const Display = () => {
     useEffect(() => {
         setMyP5(new p5(sketch, ref.current))
     }, [])
+
+    return (
+        <div ref={ref}/>
+    )
 }
 
 export default Display;
