@@ -43,7 +43,7 @@ class HorizonsAPIClient:
             async with httpx.AsyncClient() as client:
                 response = await client.get(url)
                 response.raise_for_status()
-                return response.json # return json response
+                return response.json() # return json response
         except httpx.HTTPStatusError as exc:
             print(f"Error: {exc.response.status_code} - {exc.response.text}")
             return None
