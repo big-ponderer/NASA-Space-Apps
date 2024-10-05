@@ -40,7 +40,8 @@ class Asteroid:
 
     def returnSector(self):
         return self.sector()
-    def determineSector (self, sector sec):
+    
+    def determineSector (self, sec):
         for (i, circle) in enumerate(sec.getCircleList()):
             if math.hypot(self.sunCoords[0],self.sunCoords[1]) > circle:
                 self.sector[0] = i
@@ -50,7 +51,7 @@ class Asteroid:
 
 #The individual data for each sector (will be passed to front end)
 class indivSect:
-    def __init__(self, index)
+    def __init__(self, index):
         #willbeArray
         self.index = index
         self.asteroidList = []
@@ -59,8 +60,8 @@ class indivSect:
     def addAsteroid(self, asteroid):
         self.asteroidList.append(asteroid)
     
-    def calcArea(self, sector sec):
-        self.area = math.pi * (sec.getCircleList()[self.index[0]+1] **2 - sec.getCircleList()[self.index[0]] ** 2) * sec.getTheta()/360
+    def calcArea(self, sec):
+        self.area = math.pi * (sec.getCircleList()[self.index[0]+1] **2 - sec.getCircleList()[self.index[0]] ** 2) * sec.waveTheta/360
         
     def calcDensity(self):
         self.density = len(self.asteroidList) / self.area
@@ -78,10 +79,8 @@ print(asteroidListCSV.head())
 asteroidList = []
 
 #make an array of sectors
-mainArray = [testSector.getCircleList().__sizeof__()][360/testSector.getTheta]
-for i in range (0, testSector.getCircleList().__sizeof__()):
-    for j in range (0, 360/testSector.getTheta):
-        mainArray[i][j] = indivSect([i,j])
+mainArray = [[indivSect([i,j]) for i in range( int(360/testSector.waveTheta))] for j in range( int(len(testSector.getCircleList()))-1)]
+
 
 
 
@@ -114,8 +113,8 @@ for asteroid in asteroidList:
 
 
 #process area and density for each sector
-for i in range (0, testSector.getCircleList().__sizeof__()):
-    for j in range (0, 360/testSector.getTheta):
+for i in range (0, len(testSector.getCircleList())-1):
+    for j in range (0, int(360/testSector.waveTheta)) :
         mainArray[i][j].calcArea(testSector)
         mainArray[i][j].calcDensity()
 
