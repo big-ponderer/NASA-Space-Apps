@@ -1,4 +1,6 @@
-import pandas as pd
+import pandas as pd 
+import requests as req
+
 class Asteroid:
     def __init__(self, name, diameter, mass, period, displayName, NEO, PHA ):
         self.name = name
@@ -19,13 +21,13 @@ class Asteroid:
         print(f"Asteroid(name={self.name}, diameter={self.diameter}, mass={self.mass}, period={self.period}, displayName={self.displayName}, NEO={self.NEO}, PHA={self.PHA})")
 
     def returnQuad(self):
+        
         return self.quadrant
+        
     
     
 #Change this to change asteroid file
-asteroidListCSV = pd.read_csv("api/routers/MinorObjects_code_and_file/sbdb_query_results.csv")
-
-
+asteroidListCSV = pd.read_csv("api/sbdb_query_results.csv")
 
 print(asteroidListCSV.head())
 
@@ -46,3 +48,15 @@ for index, row in asteroidListCSV.iterrows():
     asteroidList.append(asteroid)
 
 asteroidList[0].printData()
+
+
+def updateAllCoords():
+    for asteroid in asteroidList:
+        response = req.get("http://127.0.0.1:8000/solarsystem/" + asteroid.displayName)
+        
+        if response.json()["vectors"] :
+            asteroid.sunCoords = response.json()["vectors"][0]
+        else:
+            print(asteroid.printData()) #debug
+            
+updateAllCoords()

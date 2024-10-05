@@ -28,6 +28,7 @@ class HorizonsAPIClient:
             "MAKE_EPHEM": self.make_ephem,
             "EPHEM_TYPE": self.ephem_type,
             "CENTER": f"'{self.center}'",
+            "OUT_UNITS": "AU-D",
             "START_TIME": f"'{self.start_time}'",
             "STOP_TIME": f"'{self.stop_time}'",
             "STEP_SIZE": f"'{self.step_size}'",
