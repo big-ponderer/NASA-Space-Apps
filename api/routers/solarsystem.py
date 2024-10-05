@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 import httpx
+import numpy as np
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -13,8 +14,8 @@ class HorizonsAPIClient:
         self.make_ephem = "YES"  # Toggle ephemeris generation
         self.obj_data = "YES"  # Toggle object summary data
         self.center = "@sun"  # Heliocentric center
-        self.start_time = "2024-01-19"  # Start time of ephemeris
-        self.stop_time = "2024-01-20"  # Stop time of ephemeris
+        self.start_time = "2024-10-04"  # Start time of ephemeris
+        self.stop_time = "2024-10-05"  # Stop time of ephemeris
         self.step_size = "1 d"  # Time step size
         self.quantities = "1,9,20,23,24,29"  # Requested quantities
 
@@ -47,6 +48,49 @@ class HorizonsAPIClient:
         except httpx.HTTPStatusError as exc:
             print(f"Error: {exc.response.status_code} - {exc.response.text}")
             return None
+    def extract_vectors(self, data: dict) -> np.ndarray:
+        vectors = []
+        
+        # Check if 'result' key is in the response
+        if 'result' not in data:
+            print("Error: 'result' key not found in response.")
+            return np.array([])  # Return empty array if 'result' is missing
+
+        # Get the result text
+        result_text = data["result"]
+
+        # Split the result text into lines
+        lines = result_text.splitlines()
+
+        # Flag to track when we are inside the $$SOE and $$EOE section
+        inside_soe = False
+
+        for line in lines:
+            if line.startswith("$$SOE"):
+                inside_soe = True
+                continue
+            elif line.startswith("$$EOE"):
+                inside_soe = False
+                continue
+
+            if inside_soe:
+                # Process lines to extract X, Y, Z values
+                if "X =" in line and "Y =" in line and "Z =" in line:
+                    # Extract X, Y, Z from the line
+                    parts = line.split()
+                    try:
+                        print("working")
+                        x = float(parts[parts.index("X") + 2])  # X is at index +2
+                        y = float(parts[parts.index("Y") + 2])  # Y is at index +2
+                        z = float(parts[parts.index("Z") + 2])  # Z is at index +2
+                        vectors.append([x, y, z])
+                    except (ValueError, IndexError) as e:
+                        print(f"Error processing line: {line}. Exception: {e}")
+
+        return np.array(vectors)
+
+
+
 
 
 @router.get("/solarsystem")
@@ -58,18 +102,10 @@ async def read_item():
 
         if ephemeris_data:
             # Return the response as structured data
-            data_string = ephemeris_data.get("result", "")
-            start_index = data_string.find("$$SOE")
-            end_index = data_string.find("$$EOE")
-            
-            if start_index != -1 and end_index != -1:
-                # Extract the vector section
-                vectors_section = data_string[start_index + 6:end_index].strip()
-                # Split the vectors into lines and further parse if needed
-                vectors = vectors_section.splitlines()
-                return {"vectors": vectors}
-            else:
-                raise HTTPException(status_code=500, detail="Vectors not found in response")
+            vectors = client.extract_vectors(ephemeris_data)
+            print(vectors)
+            #return ephemeris_data
+            return {"vectors": vectors.tolist()}
         else:
             raise HTTPException(status_code=500, detail="Failed to retrieve ephemeris data")
         
