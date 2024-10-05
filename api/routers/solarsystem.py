@@ -58,7 +58,18 @@ async def read_item():
 
         if ephemeris_data:
             # Return the response as structured data
-            return {"data": ephemeris_data}
+            data_string = ephemeris_data.get("result", "")
+            start_index = data_string.find("$$SOE")
+            end_index = data_string.find("$$EOE")
+            
+            if start_index != -1 and end_index != -1:
+                # Extract the vector section
+                vectors_section = data_string[start_index + 6:end_index].strip()
+                # Split the vectors into lines and further parse if needed
+                vectors = vectors_section.splitlines()
+                return {"vectors": vectors}
+            else:
+                raise HTTPException(status_code=500, detail="Vectors not found in response")
         else:
             raise HTTPException(status_code=500, detail="Failed to retrieve ephemeris data")
         
