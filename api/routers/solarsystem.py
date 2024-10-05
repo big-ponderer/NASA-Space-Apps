@@ -28,7 +28,6 @@ class HorizonsAPIClient:
             "MAKE_EPHEM": self.make_ephem,
             "EPHEM_TYPE": self.ephem_type,
             "CENTER": f"'{self.center}'",
-            "OUT_UNITS": "AU-D",
             "START_TIME": f"'{self.start_time}'",
             "STOP_TIME": f"'{self.stop_time}'",
             "STEP_SIZE": f"'{self.step_size}'",
@@ -49,6 +48,7 @@ class HorizonsAPIClient:
         except httpx.HTTPStatusError as exc:
             print(f"Error: {exc.response.status_code} - {exc.response.text}")
             return None
+        
     def extract_vectors(self, data: dict) -> np.ndarray:
         vectors = []
         
@@ -76,17 +76,19 @@ class HorizonsAPIClient:
 
             if inside_soe:
                 # Process lines to extract X, Y, Z values
+                print(line)
                 if "X =" in line and "Y =" in line and "Z =" in line:
                     # Extract X, Y, Z from the line
-                    parts = line.split()
+                    parts = line.strip().split('=')
+                    
                     try:
-                        print("working")
-                        x = float(parts[parts.index("X") + 2])  # X is at index +2
-                        y = float(parts[parts.index("Y") + 2])  # Y is at index +2
-                        z = float(parts[parts.index("Z") + 2])  # Z is at index +2
+                        x = float(parts[1].strip().split(' ')[0])  # X is at index 1
+                        y = float(parts[2].strip().split(' ')[0])  # Y is at index 2
+                        z = float(parts[3].strip())  # Z is at index 3
+                        
                         vectors.append([x, y, z])
                     except (ValueError, IndexError) as e:
-                        print(f"Error processing line: {line}. Exception: {e}")
+                        print(f"Error processing line: {line}. Exception: {e}.")
 
         return np.array(vectors)
 
@@ -94,18 +96,16 @@ class HorizonsAPIClient:
 
 
 
-@router.get("/solarsystem")
-async def read_item():
+@router.get("/solarsystem/{asteroid_name}")
+async def read_item(asteroid_name):
     try:
         # Hardcoding command for Mars ('499')
-        client = HorizonsAPIClient(command="499")  # Mars' command is '499'
+        client = HorizonsAPIClient(command = asteroid_name)  # Mars' command is '499'
         ephemeris_data = await client.get_ephemeris_data()
 
         if ephemeris_data:
             # Return the response as structured data
             vectors = client.extract_vectors(ephemeris_data)
-            print(vectors)
-            #return ephemeris_data
             return {"vectors": vectors.tolist()}
         else:
             raise HTTPException(status_code=500, detail="Failed to retrieve ephemeris data")
