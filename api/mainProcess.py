@@ -82,7 +82,7 @@ class AllAsteroids:
         self.asteroidListCSV = []
         self.asteroidList = []
 
-        self.testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 10, 40], 2) 
+        self.testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 7], 2) 
         self.mainArray = [[indivSect([i,j]) for i in range(int(360/self.testSector.waveTheta))] for j in range( int(len(self.testSector.getCircleList()))-1)]
         self.readCSV(file_name)
         
