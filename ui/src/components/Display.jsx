@@ -65,8 +65,11 @@ const Display = () => {
         p.draw = () => {
             //space purple
             p.background(10, 10, 44);
-            p.ambientLight(100);
-            p.pointLight(75, 75, 75, 0, 0, 0)
+            p.ambientLight(50, 50, 50);
+            p.directionalLight(200, 200, 200, 0, 0, -1);
+            p.pointLight(255, 255, 255, 100, 100, 200);
+            p.specularMaterial(100, 100, 100);
+            p.shininess(10);
 
             angleX += (p.movedX * 0.01);
             angleY += (p.movedY * 0.01);
@@ -92,18 +95,18 @@ const Display = () => {
             p.noStroke();
             //asteroid color
             p.fill(139, 69, 19);
-            p.specularMaterial(255);
-            p.shininess(20);
             let currentX = 0;
             let currentY = 0;
             let currentZ = 0;
             data.asteroids && data.asteroids.forEach(asteroid => {
-                currentX = Math.round(asteroid.position[0]) - currentX;
-                currentY = Math.round(asteroid.position[1]) - currentY;
-                currentZ = Math.round(asteroid.position[2]) - currentZ;
-                p.translate(currentX, currentY, currentZ);
-                p.sphere(50);
-                p.translate(-currentX, -currentY, -currentZ);
+                if (asteroid.position) {
+                    currentX = Math.round(asteroid.position[0]) - currentX;
+                    currentY = Math.round(asteroid.position[1]) - currentY;
+                    currentZ = Math.round(asteroid.position[2]) - currentZ;
+                    p.translate(currentX, currentY, currentZ);
+                    p.sphere(asteroid.radius);
+                    p.translate(-currentX, -currentY, -currentZ);
+                }
             })
             p.pop();
         }
