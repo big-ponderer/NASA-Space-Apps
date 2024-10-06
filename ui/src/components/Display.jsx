@@ -25,8 +25,13 @@ const PLACEHOLDER_DATA = {
 }
 
 const PLACEHOLDER_SYSTEM = {
-    radii: [5, 3, 2, 1],
-    sectionAngle: 45
+    radii: [5, 1, 3],
+    sectionAngle: Math.PI / 1.5,
+    sectors: [
+        [{density: 0.1}, {density: 0.2}, {density: 0.3}],
+        [{density: 0.4}, {density: 0.5}, {density: 0.6}],
+        [{density: 0.7}, {density: 0.8}, {density: 0.9}]
+    ]
 }
 
 const planets = [
@@ -131,11 +136,7 @@ const Display = () => {
 
         p.setup = () => {
             const p5Div = document.getElementById("orrery");
-            if(p5Div){
-                p.createCanvas(Utils.elementWidth(p5Div), Utils.elementHeight(p5Div));
-            } else {
-                p.noCanvas()
-            }
+            p.createCanvas(Utils.elementWidth(p5Div), Utils.elementHeight(p5Div));
         }
 
         p.draw = () => {
@@ -144,10 +145,14 @@ const Display = () => {
             const orreryRadius = 0.9 * Math.min(p.height, p.width) / 2;
             const CENTER_X = p.width / 2;
             const CENTER_Y = p.height / 2;
-            const largestCircle = data.radii && data.radii.sort((a, b) => b - a)[0];
-            data.radii && data.radii.forEach((radius) => {
-                p.fill(255, 255, 255, 100);
-                p.ellipse(CENTER_X, CENTER_Y, orreryRadius * radius / largestCircle, orreryRadius * radius / largestCircle);
+            const largestCircle = data.radii && Math.max(...data.radii)
+            const sortedRadii = data.radii.sort((a, b) => b - a);
+            data.sectors.slice().reverse().forEach((ring, i) => {
+                ring.forEach((sector, j) => {
+                    p.fill(200 * sector.density + 55, 0, 200 * sector.density + 55);
+                    console.log([data.sectionAngle*j, data.sectionAngle*(j+1)])
+                    p.arc(CENTER_X, CENTER_Y, orreryRadius * sortedRadii[i] / largestCircle, orreryRadius * sortedRadii[i] / largestCircle, data.sectionAngle*j, data.sectionAngle*(j+1));
+                })
             })
             const positions = planetOrbits(p.frameCount)
             planets.forEach((planet) => {
