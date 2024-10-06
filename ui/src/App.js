@@ -7,11 +7,6 @@ const queryClient = new QueryClient()
 
 const App = () => <QueryClientProvider client={queryClient}>
   <div className="App">
-    <header className="header">
-      <h1 className="title">Orrery</h1>
-      <p className="subtitle">use your cursor to look around. press W to move forard and S to move backward</p>
-    </header>
-
     <Display />
 
     <footer className="footer">
