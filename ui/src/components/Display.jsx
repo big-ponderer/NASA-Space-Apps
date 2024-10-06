@@ -197,10 +197,9 @@ const Display = () => {
     const [myP5, setMyP5] = useState(null)
     const ref = useRef()
     const [view, setView] = useState('system')
-    const [activeAsteroid, setActiveAsteroid] = useState(null)
     const [currentID, setCurrentID] = useState([0, 0])
     const [cameraPos, setCameraPos] = useState({ x: 0, y: 0, z: 0 })
-
+    const [activeAsteroid, setActiveAsteroid] = useState(null)
     const solarSystem = useQuery("system", fetchSystem)
 
     useEffect(() => {
@@ -232,9 +231,7 @@ const Display = () => {
         <div className="simulator-container">
             <div id="orrery" ref={ref} style={{ height: "100%" }} />
         </div>
-
         <p />
-
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
     </>

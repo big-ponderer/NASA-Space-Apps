@@ -11,8 +11,8 @@ router = APIRouter()
 @router.get("/solarsystem")
 async def read_item():
     try:
-        asteroids = AllAsteroids("coolerAsteroids.csv", preload=True)
-        mainArray =  await asteroids.updateAllCoords(preload=True)
+        asteroids = AllAsteroids("sbdb_query_results-3.csv")
+        mainArray =  await asteroids.updateAllCoords()
         #print(mainArray)
         sectors = []
         for i in range(len(mainArray)):
@@ -31,12 +31,17 @@ async def read_item():
                     asteroid_dict = {
                         "position": asteroid.sunCoords, 
                         "velocity": asteroid.velocity,
-                        "radius": asteroid.diameter/2*6.68459e-9
+                        "radius": asteroid.diameter/2,
+                        "name": asteroid.displayName,
+                        "nearEarth": asteroid.NEO == 'Y',
+                        "hazardous": asteroid.PHA == 'Y',
+                        "mass": asteroid.mass/6.67E-11,
+                        "period": asteroid.period,
+                        "intestRez": asteroid.materialsofInterest()
                     }
-                    asteroid_list.append(asteroid_dict)
-
                 if len(mainArray[i][j].asteroidSectorList) >0:
                     cam_pos = (sum_pos/len(mainArray[i][j].asteroidSectorList)).tolist()
+                asteroid_list.append(asteroid_dict)
                 output_dic["asteroids"] = asteroid_list
                 output_dic["cameraPos"] = {"x":cam_pos[0], "y":cam_pos[1], "z":cam_pos[2]}
                 one_layer.append(output_dic)

@@ -2,7 +2,6 @@ import pandas as pd
 import math 
 from get_asteroids import get_asteroid
 from tqdm import tqdm
-import csv
 
 """
 Last circle does not define a sector
@@ -50,36 +49,22 @@ class Asteroid:
         if degrees < 0:
             degrees += 360
         self.sector[1] = int(degrees/sec.waveTheta)
-
-    def determineSectorCoords(self, sec):
-        thetaR = self.sector[1] * sec.waveTheta
-        secx = 0
-        secy =0
-        #Overunder says whether the value is on the wider x size of a quadrant, and x has to be negative
-        overunder =1
-        if thetaR < 90:
-            secx = math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
-        elif thetaR < 180:
-            secx = -math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
-        elif thetaR < 270:
-            secx = -math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = -math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
+    
+    def materialsofInterest(self):
+        if self.mass :
+            density = self.mass/6.67E-11 / (4/3 * math.pi * (self.diameter*1000/2)**3)
+            if density < 1420:
+                return "not many"
+            elif density < 4000:
+                "nickel and iron"
+            else:
+                return "rare metals"
         else:
-            secx = math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = -math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
+            return "unknown"
         
-        degrees = math.degrees(math.atan2(self.sunCoords[1], self.sunCoords[0]))
-        if degrees < 0:
-            degrees += 360
-        if (thetaR < degrees):
-            overunder = -1
-        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), abs(self.sunCoords[1] -secy), self.sunCoords[2]]
-
 
 class AllAsteroids:
-    def __init__(self, file_name, preload):
+    def __init__(self, file_name):
         self.asteroidListCSV = []
         self.asteroidList = []
 
@@ -103,47 +88,22 @@ class AllAsteroids:
             self.asteroidList.append(asteroid)
 
 
-    async def updateAllCoords(self, preload):
-        if preload:
-            coolListCSV = pd.read_csv("cooler_asteroids_coordinates.csv")
-            for index, row in coolListCSV.iterrows():
-                asteroid = self.asteroidList[index]
-                asteroid.sunCoords = [row["Sun Coords X"], row["Sun Coords Y"], row["Sun Coords Z"]]
-                asteroid.velocity = [row["Velocity X"], row["Velocity Y"], row["Velocity Z"]]
+    async def updateAllCoords(self):
+        for asteroid in tqdm(self.asteroidList, desc="Processing asteroids", unit="asteroid"):
+        #call the API and get data
+            resp = await get_asteroid(asteroid.displayName)
+
+            if resp[0] and resp[1]:
+                asteroid.sunCoords = resp[0][0]
+                asteroid.velocity = resp[1][0]
+                print("coords: ", asteroid.sunCoords, "velocity: ", asteroid.velocity)
+                asteroid.printData()
                 asteroid.determineSector(self.testSector)
                 print(asteroid.sector, "********", asteroid.displayName)
-
+                
                 self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
-        else:
-            with open('cooler_asteroids_coordinates.csv', mode='w', newline='') as csvfile:
-                # Create a CSV writer
-                csv_writer = csv.writer(csvfile)
-                # Write the header
-                csv_writer.writerow(['Display Name', 'Sun Coords X', 'Sun Coords Y', 'Sun Coords Z', 'Velocity X', 'Velocity Y', 'Velocity Z'])
-
-                for asteroid in tqdm(self.asteroidList, desc="Processing asteroids", unit="asteroid"):
-                #call the API and get data
-                    resp = await get_asteroid(asteroid.displayName)
-
-                    if resp[0] and resp[1]:
-                        asteroid.sunCoords = resp[0][0]
-                        asteroid.velocity = resp[1][0]
-                        print("coords: ", asteroid.sunCoords, "velocity: ", asteroid.velocity)
-                        asteroid.printData()
-                        asteroid.determineSector(self.testSector)
-                        print(asteroid.sector, "********", asteroid.displayName)
-                        
-                        self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
-                        # Write asteroid data to CSV
-                        csv_writer.writerow([
-                            asteroid.displayName,
-                            asteroid.sunCoords[0], asteroid.sunCoords[1], asteroid.sunCoords[2],
-                            asteroid.velocity[0], asteroid.velocity[1], asteroid.velocity[2],
-                            f"{asteroid.sector[0]}, {asteroid.sector[1]}"
-                        ])
-
-                    # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcArea(self.testSector)
-                    # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcDensity()
+                # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcArea(self.testSector)
+                # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcDensity()
 
 
         # print("main file****", self.mainArray)
