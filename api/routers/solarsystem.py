@@ -21,20 +21,27 @@ async def read_item():
                 output_dic = {}
                 output_dic["id"] = [i, j]
                 output_dic["density"] = len(mainArray[i][j].asteroidSectorList)
+
                 asteroid_list = []
                 asteroid_dict = {}
+                cam_pos = [0.1, 0.1, 0]
+                sum_pos = np.array([0.0, 0.0, 0.0])
                 for asteroid in mainArray[i][j].asteroidSectorList:
+                    sum_pos += np.array(asteroid.sunCoords)
                     asteroid_dict = {
                         "position": asteroid.sunCoords, 
                         "velocity": asteroid.velocity,
                         "radius": asteroid.diameter
                     }
+                if len(mainArray[i][j].asteroidSectorList) >0:
+                    cam_pos = (sum_pos/len(mainArray[i][j].asteroidSectorList)).tolist()
                 asteroid_list.append(asteroid_dict)
                 output_dic["asteroids"] = asteroid_list
+                output_dic["cameraPos"] = {"x":cam_pos[0], "y":cam_pos[1], "z":cam_pos[2]}
                 one_layer.append(output_dic)
             sectors.append(one_layer)
         #print(sectors, "working")
-        print(type(sectors))
+        #print(type(sectors))
         ret = {
             "radii": asteroids.testSector.circleList,
             "angles": asteroids.testSector.waveTheta*2*np.pi/360,
