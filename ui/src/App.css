@@ -83,8 +83,8 @@ body, html {
 
 /* Simulator frame - gives it a "screen" look */
 .simulator-container {
-  width: 80vw;
-  height: 60vh;
+  width: 90vw;
+  height: 75vh;
   border: 2px solid #39ff14; /* Neon green border */
   border-radius: 10px;
   box-shadow: 0px 0px 20px 5px rgba(57, 255, 20, 0.5); /* Glow effect */

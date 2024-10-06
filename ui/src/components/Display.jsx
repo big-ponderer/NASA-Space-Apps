@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
-import { Utils } from '../functions.js'
+import { Utils, planetOrbits } from '../functions.js'
 
 const PLACEHOLDER_DATA = {
     cameraPos: { x: 0, y: 0, z: 0 },
@@ -28,6 +28,14 @@ const PLACEHOLDER_SYSTEM = {
     radii: [5, 3, 2, 1],
     sectionAngle: 45
 }
+
+const planets = [
+    {name: "Mercury", color: "gray", radius: 1.6 * 10**-5}, //in AU
+    {name: "Venus", color: "yellow", radius: 4.0 * 10**-5},
+    {name: "Earth", color: "blue", radius: 4.2 * 10**-5},
+    {name: "Mars", color: "red", radius: 2.2 * 10**-5},
+    {name: "Jupiter", color: "orange", radius: 4.4 * 10**-5},
+]
 
 const Display = () => {
     const sector = p => {
@@ -122,6 +130,7 @@ const Display = () => {
             } else {
                 p.noCanvas()
             }
+            console.log(planetOrbits(0))
         }
 
         p.draw = () => {
@@ -134,6 +143,14 @@ const Display = () => {
             data.radii && data.radii.forEach((radius) => {
                 p.fill(255, 255, 255, 100);
                 p.ellipse(CENTER_X, CENTER_Y, orreryRadius * radius / largestCircle, orreryRadius * radius / largestCircle);
+            })
+            const positions = planetOrbits(p.frameCount)
+            planets.forEach((planet) => {
+                p.noStroke()
+                p.fill(planet.color);
+                const x = CENTER_X + orreryRadius * positions[planet.name][0] / largestCircle;
+                const y = CENTER_Y + orreryRadius * positions[planet.name][1] / largestCircle;
+                p.circle(x, y, 0.5*10**4 * orreryRadius * planet.radius / largestCircle)
             })
         }
     }
