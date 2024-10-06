@@ -24,11 +24,11 @@ const getSectorColor = density => {
 
 const renderSector = (data, p, setActiveAsteroid, models) => {
     p.push()
-    data.asteroids && data.asteroids.forEach((asteroid,i) => {
+    data.asteroids && data.asteroids.forEach((asteroid, i) => {
         if (asteroid.position && models) {
             //models take turns
-            console.log(i%models.length)
-            const model = models[i%models.length]
+            console.log(i % models.length)
+            const model = models[i % models.length]
             //detect which asteroid is being looked at if any
             const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
             const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
@@ -78,7 +78,7 @@ const Display = () => {
         p.inSystemView = () => false
 
         p.preload = () => {
-            asteroidModels = [1,2,3].map(i => p.loadModel(`asteroid${i}.stl`))
+            asteroidModels = [1, 2, 3].map(i => p.loadModel(`asteroid${i}.stl`))
         }
 
         p.setup = () => {
@@ -137,7 +137,7 @@ const Display = () => {
             p.noStroke();
             //asteroid color
             renderSector(data, p, setActiveAsteroid, asteroidModels);
-            neighboringSectors.forEach(sector => {renderSector(sector, p, setActiveAsteroid)});
+            neighboringSectors.forEach(sector => { renderSector(sector, p, setActiveAsteroid) });
             p.pop();
         }
     }
@@ -208,6 +208,7 @@ const Display = () => {
     const [currentID, setCurrentID] = useState([0, 0])
     const [cameraPos, setCameraPos] = useState({ x: 0, y: 0, z: 0 })
     const [activeAsteroid, setActiveAsteroid] = useState(null)
+    const [popupOpen, setPopupOpen] = useState(false)
     const solarSystem = useQuery("system", fetchSystem)
 
     useEffect(() => {
@@ -230,6 +231,17 @@ const Display = () => {
         }
     }, [solarSystem.data, view]);
 
+    //open popup when user press p
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "p") {
+                setPopupOpen(!popupOpen)
+            }
+        }
+        window.addEventListener("keydown", handleKeyDown)
+        return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [popupOpen])
+
     return <>
         <header className="header">
             <h1 className="title">{activeAsteroid && "Now Observing:"}  {activeAsteroid || "Orrery"}</h1>
@@ -242,6 +254,11 @@ const Display = () => {
         <p />
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
+        <img
+            src="mockup.png"
+            className={`centered-image ${popupOpen ? '' : 'hidden'}`}
+        />
+
     </>
 }
 
