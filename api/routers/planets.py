@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def kepler_newtons_method(M, e, tol=1e-6, max_iter=1000):
     # Initial guess for E (starting with the mean anomaly)
@@ -27,14 +28,13 @@ def planet_orbits(t):
     ]
 
     G = 2.959122082855911E-4 # AU^3 / (kg * day^2)
-    M_sun = 1.989E30 # kg
     position_vectors = []
 
     for planet in elements:
         # Calculate mean motion (n)
-        n = (G * M_sun / planet["a"]**3)**(1/2)
+        n = (G  / planet["a"]**3)**(1/2) # radians/day
         # Mean anomaly at time t
-        M_t = planet["M0"] + n * t
+        M_t = np.radians(planet["M0"]) + n * t # Convert M0 from degrees to radians
         # Solve for eccentric anomaly E_t using Newton's method
         E_t = kepler_newtons_method(M_t, planet["e"])
         # True anomaly v_t
@@ -48,6 +48,39 @@ def planet_orbits(t):
         position_vectors.append([x, y])
 
     return position_vectors
+
+# Generate positions for a range of time values
+time_range = np.linspace(0, 365*5, 5000)  # one year
+orbits = {"Mercury": [], "Venus": [], "Earth": [], "Mars": [], "Jupiter": []}
+
+# Collect orbit data for each planet
+for t in time_range:
+    positions = planet_orbits(t)
+    for i, planet in enumerate(orbits):
+        orbits[planet].append(positions[i])
+
+# Convert orbits to numpy arrays for easy plotting
+for planet in orbits:
+    orbits[planet] = np.array(orbits[planet])
+
+# Plot orbits
+plt.figure(figsize=(10, 10))
+for planet, color in zip(orbits, ['orange', 'yellow', 'blue', 'red', 'brown']):
+    plt.plot(orbits[planet][:, 0], orbits[planet][:, 1], label=planet, color=color)
+
+# Plot the Sun at the center
+plt.plot(0, 0, 'yo', label="Sun")
+
+plt.title("Orbits of Inner Planets and Jupiter (2D Projection)")
+plt.xlabel("X (AU)")
+plt.ylabel("Y (AU)")
+plt.legend()
+plt.axis("equal")
+plt.grid(True)
+plt.show()
+
+
+
 
 
 
