@@ -3,6 +3,7 @@ import p5 from 'p5';
 import { Utils, planetOrbits } from '../functions.js'
 import { useQuery } from 'react-query'
 import { fetchSystem } from '../queries.js'
+import loadingScreen from './loadingScreen.js'
 
 const PLACEHOLDER_DATA = {
     cameraPos: { x: 0, y: 0, z: 0 },
@@ -60,7 +61,7 @@ const Display = () => {
         let img;
         let data = currentSector
 
-        p.checkIfSectorView = () => true
+        p.inSystemView = () => false
 
         p.setup = () => {
             //dummy data
@@ -138,9 +139,8 @@ const Display = () => {
 
     const system = p => {
         const data = solarSystem.data || PLACEHOLDER_SYSTEM
-        console.log(data)
         let zoom = 1
-        p.checkIfSectorView = () => false
+        p.inSystemView = () => true
 
         p.preload = () => {
             planets && planets.forEach((planet) => {
@@ -154,7 +154,6 @@ const Display = () => {
         }
 
         p.draw = () => {
-            console.log(zoom)
             if(p.keyIsDown(87)){
                 zoom += 0.01
             }
@@ -201,15 +200,29 @@ const Display = () => {
     const ref = useRef()
     const checkFirstRender = useRef(true)
     const [view, setView] = useState('system')
-    const [currentSector, setCurrentSector] = useState({})
-    //const [zoom, setZoom] = useState(1)
+    const [currentSector, setCurrentSector] = useState([0,0])
 
     const solarSystem = useQuery("system", fetchSystem)
 
     useEffect(() => {
-        if (solarSystem.data && view === "system" && (!myP5 || myP5.checkIfSectorView())) {
+        if (solarSystem.data) {
+            if (!myP5 || !myP5.inSystemView()){
+                switch (view) {
+                    case "system":
+                        myP5 && myP5.remove()
+                        setMyP5(new p5(system, ref.current))
+                        break;
+                    case "sector":
+                        myP5 && myP5.remove()
+                        setMyP5(new p5(sector, ref.current))
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
             myP5 && myP5.remove()
-            setMyP5(new p5(system, ref.current))
+            setMyP5(new p5(loadingScreen, ref.current))
         }
     }, [solarSystem.data, view]);
 
