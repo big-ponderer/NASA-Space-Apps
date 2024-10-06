@@ -2,6 +2,7 @@ import pandas as pd
 import math 
 from get_asteroids import get_asteroid
 from tqdm import tqdm
+import csv
 
 """
 Last circle does not define a sector
@@ -78,7 +79,7 @@ class Asteroid:
 
 
 class AllAsteroids:
-    def __init__(self, file_name):
+    def __init__(self, file_name, preload):
         self.asteroidListCSV = []
         self.asteroidList = []
 
@@ -102,22 +103,47 @@ class AllAsteroids:
             self.asteroidList.append(asteroid)
 
 
-    async def updateAllCoords(self):
-        for asteroid in tqdm(self.asteroidList, desc="Processing asteroids", unit="asteroid"):
-        #call the API and get data
-            resp = await get_asteroid(asteroid.displayName)
-
-            if resp[0] and resp[1]:
-                asteroid.sunCoords = resp[0][0]
-                asteroid.velocity = resp[1][0]
-                print("coords: ", asteroid.sunCoords, "velocity: ", asteroid.velocity)
-                asteroid.printData()
+    async def updateAllCoords(self, preload):
+        if preload:
+            coolListCSV = pd.read_csv("cooler_asteroids_coordinates.csv")
+            for index, row in coolListCSV.iterrows():
+                asteroid = self.asteroidList[index]
+                asteroid.sunCoords = [row["Sun Coords X"], row["Sun Coords Y"], row["Sun Coords Z"]]
+                asteroid.velocity = [row["Velocity X"], row["Velocity Y"], row["Velocity Z"]]
                 asteroid.determineSector(self.testSector)
                 print(asteroid.sector, "********", asteroid.displayName)
-                
+
                 self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
-                # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcArea(self.testSector)
-                # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcDensity()
+        else:
+            with open('cooler_asteroids_coordinates.csv', mode='w', newline='') as csvfile:
+                # Create a CSV writer
+                csv_writer = csv.writer(csvfile)
+                # Write the header
+                csv_writer.writerow(['Display Name', 'Sun Coords X', 'Sun Coords Y', 'Sun Coords Z', 'Velocity X', 'Velocity Y', 'Velocity Z'])
+
+                for asteroid in tqdm(self.asteroidList, desc="Processing asteroids", unit="asteroid"):
+                #call the API and get data
+                    resp = await get_asteroid(asteroid.displayName)
+
+                    if resp[0] and resp[1]:
+                        asteroid.sunCoords = resp[0][0]
+                        asteroid.velocity = resp[1][0]
+                        print("coords: ", asteroid.sunCoords, "velocity: ", asteroid.velocity)
+                        asteroid.printData()
+                        asteroid.determineSector(self.testSector)
+                        print(asteroid.sector, "********", asteroid.displayName)
+                        
+                        self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
+                        # Write asteroid data to CSV
+                        csv_writer.writerow([
+                            asteroid.displayName,
+                            asteroid.sunCoords[0], asteroid.sunCoords[1], asteroid.sunCoords[2],
+                            asteroid.velocity[0], asteroid.velocity[1], asteroid.velocity[2],
+                            f"{asteroid.sector[0]}, {asteroid.sector[1]}"
+                        ])
+
+                    # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcArea(self.testSector)
+                    # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcDensity()
 
 
         # print("main file****", self.mainArray)

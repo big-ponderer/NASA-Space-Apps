@@ -11,8 +11,8 @@ router = APIRouter()
 @router.get("/solarsystem")
 async def read_item():
     try:
-        asteroids = AllAsteroids("sbdb_query_results-3.csv")
-        mainArray =  await asteroids.updateAllCoords()
+        asteroids = AllAsteroids("coolerAsteroids.csv", preload=True)
+        mainArray =  await asteroids.updateAllCoords(preload=True)
         #print(mainArray)
         sectors = []
         for i in range(len(mainArray)):
