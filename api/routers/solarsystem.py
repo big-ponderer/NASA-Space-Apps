@@ -42,7 +42,7 @@ async def read_item():
                     }
                 if len(mainArray[i][j].asteroidSectorList) >0:
                     cam_pos = (sum_pos/len(mainArray[i][j].asteroidSectorList)).tolist()
-                asteroid_list.append(asteroid_dict)
+                    asteroid_list.append(asteroid_dict)
                 output_dic["asteroids"] = asteroid_list
                 output_dic["cameraPos"] = {"x":cam_pos[0], "y":cam_pos[1], "z":cam_pos[2]}
                 one_layer.append(output_dic)
