@@ -50,7 +50,7 @@ class HorizonsAPIClient:
         
     def extract_vectors(self, data: dict) -> np.ndarray:
         vectors = []
-        
+        vel_vectors = []
         # Check if 'result' key is in the response
         if 'result' not in data:
             print("Error: 'result' key not found in response.")
@@ -88,10 +88,26 @@ class HorizonsAPIClient:
                         vectors.append([x, y, z])
                     except (ValueError, IndexError) as e:
                         print(f"Error processing line: {line}. Exception: {e}.")
+
+                    vector_parts = lines[i + 1].strip().split("=")
+                    #print(lines[i+1])
+                    # print("!!"+vector_parts[1].strip().split(' ')[0]+"!!")
+                    # print("!!"+vector_parts[2].strip().split(' ')[0]+"!!")
+                    # print("!!"+vector_parts[3].strip()+"!!")
+                    try:
+                        vx = float(vector_parts[1].strip().split(' ')[0].strip())  # X is at index 1
+                        vy = float(vector_parts[2].strip().split(' ')[0].strip())  # Y is at index 2
+                        vz = float(vector_parts[3].strip())  # Z is at index 3
+                        
+                        vel_vectors.append([vx, vy, vz])
+                    except (ValueError, IndexError) as e:
+                        print(f"Error processing line: {line}. Exception: {e}.")
+
+
                         
                 
 
-        return np.array(vectors)
+        return vectors, vel_vectors
 
 
 async def get_asteroid(asteroid_name):
@@ -102,9 +118,9 @@ async def get_asteroid(asteroid_name):
 
         if ephemeris_data:
             # Return the response as structured data
-            vectors = client.extract_vectors(ephemeris_data)
+            vectors, vel_vectors  = client.extract_vectors(ephemeris_data)
             # if len(vectors)>0:
-            return vectors.tolist()
+            return vectors, vel_vectors
         # else:
         #     print("skipped")
         #     return "skip"
