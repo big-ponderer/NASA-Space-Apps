@@ -34,7 +34,7 @@ const renderSector = (data, p, setActiveAsteroid, models) => {
             const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
             const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
             if (/*distance < 50 && */angle > asteroidAngle - p.PI / 8 && angle < asteroidAngle + p.PI / 8) {
-                setActiveAsteroid(asteroid.position[0])
+                setActiveAsteroid(asteroid.name)
             } else {
                 setActiveAsteroid(null)
             }
