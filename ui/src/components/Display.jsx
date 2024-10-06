@@ -145,7 +145,7 @@ const Display = () => {
             if(p.keyIsDown(87)){
                 zoom += 0.01
             }
-            if(p.keyIsDown(83) && zoom > 0.05) {
+            if(p.keyIsDown(83) && zoom > 1) {
                 zoom -= 0.01
             }
 
