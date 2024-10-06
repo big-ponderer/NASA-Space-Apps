@@ -1,3 +1,4 @@
 fastapi[all]
 uvicorn[all]
 numpy[all]
+pandas
