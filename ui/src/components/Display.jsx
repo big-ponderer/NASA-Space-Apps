@@ -14,9 +14,9 @@ const planets = [
 ]
 
 const getSectorColor = density => {
-    const red = 5 + 20 * density
-    const green = 5 + 20 * density
-    const blue = 22 + 20 * density
+    const red = 3 + 20 * density
+    const green = 3 + 20 * density
+    const blue = 11 + 20 * density
     return [red, green, blue]
 }
 
@@ -46,7 +46,7 @@ const renderSector = (data, p, setActiveAsteroid) => {
             if (asteroid.velocity) {
                 const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10 ** 10)
                 const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10 ** 10)
-                p.strokeWeight(asteroid.radius * 5 * 10 ** 4)
+                p.strokeWeight(asteroid.radius * 5 * 10 ** 2)
                 p.stroke(255)
                 p.smooth()
                 p.line(...point1, ...point2)
@@ -76,7 +76,9 @@ const Display = () => {
         p.inSystemView = () => false
 
         p.setup = () => {
-            p.createCanvas(p.displayWidth, p.displayHeight, p.WEBGL);
+            //p.createCanvas(p.displayWidth, p.displayHeight, p.WEBGL);
+            const p5Div = document.getElementById("orrery");
+            p.createCanvas(Utils.elementWidth(p5Div), Utils.elementHeight(p5Div), p.WEBGL);
             const cameraPos = data.cameraPos;
             cam = p.createCamera();
             cam.setPosition(cameraPos.x, cameraPos.y, cameraPos.z);
@@ -90,7 +92,7 @@ const Display = () => {
         p.draw = () => {
             setCameraPos({ x: cam.eyeX, y: cam.eyeY, z: cam.eyeZ })
             // Set the perspective with a larger near clipping plane
-            let fov = p.PI / 6; // Field of view
+            let fov = p.PI / 8; // Field of view
             let aspect = p.width / p.height; // Aspect ratio
             let near = 0.1; // Closer to 0 means objects can be closer to the camera
             let far = 1000; // How far the camera can see

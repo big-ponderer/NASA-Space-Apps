@@ -25,7 +25,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #9b30ff; /* Neon purple */
 }
 
 @keyframes App-logo-spin {
@@ -71,8 +71,8 @@ body, html {
 .title {
   font-size: 3rem;
   letter-spacing: 3px;
-  color: #39ff14; /* Neon green color */
-  text-shadow: 0 0 15px #39ff14;
+  color: #9b30ff; /* Neon purple */
+  text-shadow: 0 0 15px #9b30ff;
 }
 
 .subtitle {
@@ -85,9 +85,9 @@ body, html {
 .simulator-container {
   width: 90vw;
   height: 75vh;
-  border: 2px solid #39ff14; /* Neon green border */
+  border: 2px solid #9b30ff; /* Neon purple border */
   border-radius: 10px;
-  box-shadow: 0px 0px 20px 5px rgba(57, 255, 20, 0.5); /* Glow effect */
+  box-shadow: 0px 0px 20px 5px rgba(155, 48, 255, 0.5); /* Purple glow effect */
   position: relative;
   overflow: hidden;
 }
@@ -101,7 +101,7 @@ body, html {
 .footer-text {
   font-size: 1rem;
   color: #555;
-  text-shadow: 0 0 5px #39ff14;
+  text-shadow: 0 0 5px #9b30ff;
 }
 
 /* Add any specific styling for the iframe, if needed */
@@ -114,8 +114,8 @@ iframe {
 
 .button {
   background-color: #000; /* Dark background to match the theme */
-  color: #39ff14; /* Neon green text */
-  border: 2px solid #39ff14; /* Neon green border */
+  color: #9b30ff; /* Neon purple text */
+  border: 2px solid #9b30ff; /* Neon purple border */
   padding: 10px 20px;
   font-size: 1.2rem;
   font-family: 'Orbitron', sans-serif; /* Keep the futuristic font */
@@ -123,23 +123,23 @@ iframe {
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease; /* Smooth transition for hover effects */
-  box-shadow: 0px 0px 15px rgba(57, 255, 20, 0.5); /* Neon glow */
+  box-shadow: 0px 0px 15px rgba(155, 48, 255, 0.5); /* Purple glow */
   text-transform: uppercase; /* Make the text appear bold */
   width: 95%;
 }
 
 /* Hover effect */
 .button:hover {
-  background-color: #39ff14; /* Neon green background on hover */
+  background-color: #9b30ff; /* Neon purple background on hover */
   color: #000; /* Invert text color to black */
-  box-shadow: 0px 0px 25px rgba(57, 255, 20, 1); /* Increase the glow */
+  box-shadow: 0px 0px 25px rgba(155, 48, 255, 1); /* Increase the purple glow */
   transform: scale(1.05); /* Slightly enlarge the button on hover */
 }
 
 /* Active button state */
 .button:active {
   transform: scale(0.98); /* Shrink slightly to give a "pressed" effect */
-  box-shadow: 0px 0px 5px rgba(57, 255, 20, 0.8); /* Less intense glow */
+  box-shadow: 0px 0px 5px rgba(155, 48, 255, 0.8); /* Less intense purple glow */
 }
 
 /* Base styling for the slider */
@@ -149,7 +149,7 @@ iframe {
   height: 8px;  /* Set the height of the slider */
   background: #000;  /* Black background for the track */
   border-radius: 10px;  /* Rounded corners for the slider track */
-  box-shadow: 0px 0px 15px rgba(57, 255, 20, 0.5);  /* Neon glow effect */
+  box-shadow: 0px 0px 15px rgba(155, 48, 255, 0.5);  /* Neon purple glow effect */
   outline: none;  /* Remove the outline on focus */
   transition: background 0.3s ease-in-out;  /* Smooth transition on hover */
 }
@@ -160,11 +160,11 @@ iframe {
   appearance: none;
   width: 25px;  /* Set the width of the thumb */
   height: 25px;  /* Set the height of the thumb */
-  background: #39ff14;  /* Neon green thumb */
+  background: #9b30ff;  /* Neon purple thumb */
   border: 2px solid #000;  /* Black border around the thumb */
   border-radius: 50%;  /* Make the thumb a circle */
   cursor: pointer;  /* Pointer cursor on hover */
-  box-shadow: 0px 0px 15px rgba(57, 255, 20, 0.8);  /* Neon glow on the thumb */
+  box-shadow: 0px 0px 15px rgba(155, 48, 255, 0.8);  /* Purple glow on the thumb */
   transition: transform 0.3s ease;  /* Add transition for scaling on hover */
 }
 
@@ -177,11 +177,11 @@ iframe {
 .slider::-moz-range-thumb {
   width: 25px;
   height: 25px;
-  background: #39ff14;
+  background: #9b30ff;
   border: 2px solid #000;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0px 0px 15px rgba(57, 255, 20, 0.8);
+  box-shadow: 0px 0px 15px rgba(155, 48, 255, 0.8);
   transition: transform 0.3s ease;
 }
 
@@ -191,5 +191,5 @@ iframe {
 
 /* Style the slider track when hovered */
 .slider:hover {
-  background: rgba(57, 255, 20, 0.3);  /* Faint neon green highlight on hover */
+  background: rgba(155, 48, 255, 0.3);  /* Faint neon purple highlight on hover */
 }
