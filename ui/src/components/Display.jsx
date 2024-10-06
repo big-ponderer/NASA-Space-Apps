@@ -65,16 +65,15 @@ const Display = () => {
         let angleY = 0;
         let moveSpeed = 0.01;
         let data = solarSystem.data.sectors[currentID[0]][currentID[1]]
-        let neighboringSectors = [
-            solarSystem.data.sectors[currentID[0] - 1] && solarSystem.data.sectors[currentID[0] - 1][currentID[1] - 1],
-            solarSystem.data.sectors[currentID[0] - 1] && solarSystem.data.sectors[currentID[0] - 1][currentID[1]],
-            solarSystem.data.sectors[currentID[0] - 1] && solarSystem.data.sectors[currentID[0] - 1][currentID[1] + 1],
-            solarSystem.data.sectors[currentID[0]][currentID[1] - 1],
-            solarSystem.data.sectors[currentID[0]][currentID[1] + 1],
-            solarSystem.data.sectors[currentID[0] + 1] && solarSystem.data.sectors[currentID[0] + 1][currentID[1] - 1],
-            solarSystem.data.sectors[currentID[0] + 1] && solarSystem.data.sectors[currentID[0] + 1][currentID[1]],
-            solarSystem.data.sectors[currentID[0] + 1] && solarSystem.data.sectors[currentID[0] + 1][currentID[1] + 1],
-        ]
+        let neighboringSectors = []
+        if (solarSystem){
+            for(let i = currentID[0]-2; i<currentID[0]+3; i++){
+                for(let j = currentID[1]-2; j<currentID[1]+3; j++){
+                    neighboringSectors.push(solarSystem.data.sectors[i][j])
+                }
+            }
+
+        }
         p.inSystemView = () => false
 
         p.preload = () => {
@@ -269,7 +268,7 @@ const Display = () => {
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
         <img
-            src="mockup.png"
+            src="dupe.png"
             className={`centered-image ${popupOpen ? '' : 'hidden'}`}
         />
 
