@@ -32,7 +32,7 @@ async def read_item():
                     asteroid_dict = {
                         "position": asteroid.sunCoords, 
                         "velocity": asteroid.velocity,
-                        "radius": asteroid.diameter/2,
+                        "radius": asteroid.diameter/2*6.68459e-9,
                         "name": asteroid.displayName,
                         "nearEarth": asteroid.NEO == 'Y',
                         "hazardous": asteroid.PHA == 'Y',
