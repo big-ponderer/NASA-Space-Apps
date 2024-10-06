@@ -20,23 +20,82 @@ const getSectorColor = density => {
     return [red, green, blue]
 }
 
+const renderSector = (data, p, setActiveAsteroid) => {
+    p.push()
+    let currentX = 0;
+    let currentY = 0;
+    let currentZ = 0;
+    data.asteroids && data.asteroids.forEach(asteroid => {
+        if (asteroid.position) {
+            //detect which asteroid is being looked at if any
+            const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
+            const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
+            const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
+            if (/*distance < 50 && */angle > asteroidAngle - p.PI / 8 && angle < asteroidAngle + p.PI / 8) {
+                setActiveAsteroid(asteroid.position[0])
+            } else {
+                setActiveAsteroid(null)
+            }
+            currentX = asteroid.position[0] - currentX;
+            currentY = asteroid.position[1] - currentY;
+            currentZ = asteroid.position[2] - currentZ;
+            p.translate(currentX, currentY, currentZ);
+            p.noStroke()
+            p.sphere(asteroid.radius * 5 * 10 ** 5);
+            p.translate(-currentX, -currentY, -currentZ);
+            if (asteroid.velocity) {
+                const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10 ** 10)
+                const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10 ** 10)
+                p.strokeWeight(asteroid.radius * 5 * 10 ** 4)
+                p.stroke(255)
+                p.smooth()
+                p.line(...point1, ...point2)
+            }
+        }
+    })
+    p.pop()
+}
+
 const Display = () => {
     const sector = p => {
         let cam;
         let angleX = 0;
         let angleY = 0;
-        let moveSpeed = 5;
+        let moveSpeed = 0.01;
         let data = solarSystem.data.sectors[currentID[0]][currentID[1]]
+        let neighboringSectors = [
+            solarSystem.data.sectors[currentID[0] - 1] && solarSystem.data.sectors[currentID[0] - 1][currentID[1] - 1],
+            solarSystem.data.sectors[currentID[0] - 1] && solarSystem.data.sectors[currentID[0] - 1][currentID[1]],
+            solarSystem.data.sectors[currentID[0] - 1] && solarSystem.data.sectors[currentID[0] - 1][currentID[1] + 1],
+            solarSystem.data.sectors[currentID[0]][currentID[1] - 1],
+            solarSystem.data.sectors[currentID[0]][currentID[1] + 1],
+            solarSystem.data.sectors[currentID[0] + 1] && solarSystem.data.sectors[currentID[0] + 1][currentID[1] - 1],
+            solarSystem.data.sectors[currentID[0] + 1] && solarSystem.data.sectors[currentID[0] + 1][currentID[1]],
+            solarSystem.data.sectors[currentID[0] + 1] && solarSystem.data.sectors[currentID[0] + 1][currentID[1] + 1],
+        ]
         p.inSystemView = () => false
 
         p.setup = () => {
             p.createCanvas(p.displayWidth, p.displayHeight, p.WEBGL);
             const cameraPos = data.cameraPos;
-            cam = p.createCamera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
+            cam = p.createCamera();
+            cam.setPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+            console.log(cam.eyeX)
+            console.log(cam.eyeY)
+            console.log(cam.eyeZ)
             p.noCursor();
+            console.log(data)
         }
 
         p.draw = () => {
+            setCameraPos({ x: cam.eyeX, y: cam.eyeY, z: cam.eyeZ })
+            // Set the perspective with a larger near clipping plane
+            let fov = p.PI / 6; // Field of view
+            let aspect = p.width / p.height; // Aspect ratio
+            let near = 0.1; // Closer to 0 means objects can be closer to the camera
+            let far = 1000; // How far the camera can see
+            p.perspective(fov, aspect, near, far);
+
             //space purple
             p.background(10, 10, 44);
             p.ambientLight(50, 50, 50);
@@ -69,37 +128,8 @@ const Display = () => {
             p.noStroke();
             //asteroid color
             p.fill(139, 69, 19);
-            let currentX = 0;
-            let currentY = 0;
-            let currentZ = 0;
-            data.asteroids && data.asteroids.forEach(asteroid => {
-                if (asteroid.position) {
-                    //detect which asteroid is being looked at if any
-                    const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
-                    const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
-                    const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
-                    if (/*distance < 50 && */angle > asteroidAngle - p.PI / 8 && angle < asteroidAngle + p.PI / 8) {
-                        setActiveAsteroid(asteroid.position[0])
-                    } else {
-                        setActiveAsteroid(null)
-                    }
-                    currentX = Math.round(asteroid.position[0]) - currentX;
-                    currentY = Math.round(asteroid.position[1]) - currentY;
-                    currentZ = Math.round(asteroid.position[2]) - currentZ;
-                    p.translate(currentX, currentY, currentZ);
-                    p.sphere(asteroid.radius);
-                    p.translate(-currentX, -currentY, -currentZ);
-                    if (asteroid.velocity) {
-                        console.log(asteroid.velocity)
-                        const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10 ** 10)
-                        const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10 ** 10)
-                        p.strokeWeight(20)
-                        p.stroke(255)
-                        p.smooth()
-                        p.line(...point1, ...point2)
-                    }
-                }
-            })
+            renderSector(data, p, setActiveAsteroid);
+            neighboringSectors.forEach(sector => {renderSector(sector, p, setActiveAsteroid)});
             p.pop();
         }
     }
@@ -169,6 +199,7 @@ const Display = () => {
     const [view, setView] = useState('system')
     const [activeAsteroid, setActiveAsteroid] = useState(null)
     const [currentID, setCurrentID] = useState([0, 0])
+    const [cameraPos, setCameraPos] = useState({ x: 0, y: 0, z: 0 })
 
     const solarSystem = useQuery("system", fetchSystem)
 
@@ -195,7 +226,7 @@ const Display = () => {
     return <>
         <header className="header">
             <h1 className="title">{activeAsteroid && "Now Observing:"}  {activeAsteroid || "Orrery"}</h1>
-            <p className="subtitle">use your cursor to look around. press W to move forard and S to move backward</p>
+            <p className="subtitle">X position: {cameraPos.x}, Y position: {cameraPos.y}, Z position: {cameraPos.z}</p>
         </header>
 
         <div className="simulator-container">
