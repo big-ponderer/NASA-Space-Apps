@@ -65,7 +65,7 @@ class HorizonsAPIClient:
         # Flag to track when we are inside the $$SOE and $$EOE section
         inside_soe = False
 
-        for line in lines:
+        for i, line in enumerate(lines):
             if line.startswith("$$SOE"):
                 inside_soe = True
                 continue
@@ -76,7 +76,7 @@ class HorizonsAPIClient:
             if inside_soe:
                 # Process lines to extract X, Y, Z values
                 #print(line)
-                if "X =" in line and "Y =" in line and "Z =" in line:
+                if "X =" in line and "Y =" in line and "Z =" in line: #runtime todo 
                     # Extract X, Y, Z from the line
                     parts = line.strip().split('=')
                     
@@ -88,6 +88,8 @@ class HorizonsAPIClient:
                         vectors.append([x, y, z])
                     except (ValueError, IndexError) as e:
                         print(f"Error processing line: {line}. Exception: {e}.")
+                        
+                
 
         return np.array(vectors)
 

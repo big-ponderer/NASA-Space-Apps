@@ -55,7 +55,8 @@ def updateAllCoords():
     for asteroid in asteroidList:
         response = get_asteroid(asteroid.displayName)
         
-        if response.json()["vectors"] :
+        if response.json()["vectors"]:
+            
             asteroid.sunCoords = response.json()["vectors"][0]
         else:
             print(asteroid.printData()) #debug
