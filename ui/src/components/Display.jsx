@@ -9,21 +9,13 @@ const PLACEHOLDER_DATA = {
     cameraPos: { x: 0, y: 0, z: 0 },
     asteroids: [
         {
-            current: { x: 200, y: 200, z: 200 },
+            current: { x: 0, y: 0, z: 0 },
             refPoints: [
                 { x: 0, y: 0, z: 0 },
                 { x: 0, y: 0, z: 200 }
             ],
             radius: 50
         },
-        {
-            current: { x: -200, y: -200, z: -200 },
-            refPoints: [
-                { x: 0, y: 0, z: 0 },
-                { x: 0, y: 0, z: -200 }
-            ],
-            radius: 50
-        }
     ]
 }
 
@@ -31,24 +23,24 @@ const PLACEHOLDER_SYSTEM = {
     radii: [5, 1, 3],
     angles: Math.PI / 1.5,
     sectors: [
-        [{density: 0.9}, {density: 0.8}, {density: 0.7}],
-        [{density: 0.6}, {density: 0.5}, {density: 0.4}],
-        [{density: 0.3}, {density: 0.2}, {density: 0.1}]
+        [{ density: 0.9 }, { density: 0.8 }, { density: 0.7 }],
+        [{ density: 0.6 }, { density: 0.5 }, { density: 0.4 }],
+        [{ density: 0.3 }, { density: 0.2 }, { density: 0.1 }]
     ]
 }
 
 const planets = [
-    {name: "Mercury", color: "gray", radius: 1.6 * 10**-5}, //in AU
-    {name: "Venus", color: "yellow", radius: 4.0 * 10**-5},
-    {name: "Earth", color: "blue", radius: 4.2 * 10**-5},
-    {name: "Mars", color: "red", radius: 2.2 * 10**-5},
-    {name: "Jupiter", color: "orange", radius: 4.4 * 10**-5},
+    { name: "Mercury", color: "gray", radius: 1.6 * 10 ** -5 }, //in AU
+    { name: "Venus", color: "yellow", radius: 4.0 * 10 ** -5 },
+    { name: "Earth", color: "blue", radius: 4.2 * 10 ** -5 },
+    { name: "Mars", color: "red", radius: 2.2 * 10 ** -5 },
+    { name: "Jupiter", color: "orange", radius: 4.4 * 10 ** -5 },
 ]
 
 const getSectorColor = density => {
-    const red = 10 + 200 * density
-    const green = 10 + 200 * density
-    const blue = 44 + 200 * density
+    const red = 10 + 20 * density
+    const green = 10 + 20 * density
+    const blue = 44 + 20 * density
     return [red, green, blue]
 }
 
@@ -59,35 +51,14 @@ const Display = () => {
         let angleY = 0;
         let moveSpeed = 5;
         let img;
-        let data = currentSector
+        let data = solarSystem.data.sectors[currentID[0]][currentID[1]] || PLACEHOLDER_DATA
 
         p.inSystemView = () => false
 
         p.setup = () => {
-            //dummy data
-            data = {
-                cameraPos: { x: 0, y: 0, z: 0 },
-                asteroids: [
-                    {
-                        current: { x: 200, y: 200, z: 200 },
-                        refPoints: [
-                            { x: 0, y: 0, z: 0 },
-                            { x: 0, y: 0, z: 200 }
-                        ],
-                        radius: 50
-                    },
-                    {
-                        current: { x: -200, y: -200, z: -200 },
-                        refPoints: [
-                            { x: 0, y: 0, z: 0 },
-                            { x: 0, y: 0, z: -200 }
-                        ],
-                        radius: 50
-                    }
-                ]
-            }
             p.createCanvas(p.displayWidth, p.displayHeight, p.WEBGL);
-            cam = p.createCamera(0, 0, 0);
+            const cameraPos = data.cameraPos;
+            cam = p.createCamera(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, 0, 0, 1, 0);
             p.noCursor();
         }
 
@@ -126,12 +97,13 @@ const Display = () => {
             let currentX = 0;
             let currentY = 0;
             let currentZ = 0;
-            data.asteroids.forEach(asteroid => {
-                currentX = asteroid.current.x - currentX;
-                currentY = asteroid.current.y - currentY;
-                currentZ = asteroid.current.z - currentZ;
+            data.asteroids && data.asteroids.forEach(asteroid => {
+                currentX = Math.round(asteroid.position[0]) - currentX;
+                currentY = Math.round(asteroid.position[1]) - currentY;
+                currentZ = Math.round(asteroid.position[2]) - currentZ;
                 p.translate(currentX, currentY, currentZ);
-                p.sphere(asteroid.radius);
+                p.sphere(50);
+                p.translate(-currentX, -currentY, -currentZ);
             })
             p.pop();
         }
@@ -154,10 +126,10 @@ const Display = () => {
         }
 
         p.draw = () => {
-            if(p.keyIsDown(87)){
+            if (p.keyIsDown(87)) {
                 zoom += 0.01
             }
-            if(p.keyIsDown(83) && zoom > 1) {
+            if (p.keyIsDown(83) && zoom > 1) {
                 zoom -= 0.01
             }
 
@@ -174,13 +146,14 @@ const Display = () => {
                     //check if mouse is on sector
                     const distance = p.dist(p.mouseX, p.mouseY, CENTER_X, CENTER_Y)
                     const angle = (p.TAU + p.atan2(p.mouseY - CENTER_Y, p.mouseX - CENTER_X)) % p.TAU
-                    if (distance < zoom * orreryRadius * sortedRadii[i] / largestCircle && (sortedRadii.length <= i + 1 || distance > zoom * orreryRadius * sortedRadii[i+1] / largestCircle) && angle > data.angles*j && angle < data.angles*(j+1)) {
+                    if (distance < zoom * orreryRadius * sortedRadii[i] / largestCircle && (sortedRadii.length <= i + 1 || distance > zoom * orreryRadius * sortedRadii[i + 1] / largestCircle) && angle > data.angles * j && angle < data.angles * (j + 1)) {
                         p.fill(255, 255, 255);
                         if (p.mouseIsPressed && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
+                            setCurrentID(sector.id)
                             setView("sector")
                         }
                     }
-                    p.arc(CENTER_X, CENTER_Y, zoom * orreryRadius * sortedRadii[i] / largestCircle, zoom * orreryRadius * sortedRadii[i] / largestCircle, data.angles*j, data.angles*(j+1));
+                    p.arc(CENTER_X, CENTER_Y, zoom * orreryRadius * sortedRadii[i] / largestCircle, zoom * orreryRadius * sortedRadii[i] / largestCircle, data.angles * j, data.angles * (j + 1));
                 })
             })
             const positions = planetOrbits(p.frameCount)
@@ -190,7 +163,7 @@ const Display = () => {
                 const x = CENTER_X + zoom * orreryRadius * positions[planet.name][0] / largestCircle;
                 const y = CENTER_Y + zoom * orreryRadius * positions[planet.name][1] / largestCircle;
                 const image = planet.img
-                const diameter = zoom*0.5*10**4 * orreryRadius * planet.radius / largestCircle * 2
+                const diameter = zoom * 0.5 * 10 ** 4 * orreryRadius * planet.radius / largestCircle * 2
                 p.image(image, x, y, diameter, diameter)
             })
         }
@@ -200,25 +173,24 @@ const Display = () => {
     const ref = useRef()
     const checkFirstRender = useRef(true)
     const [view, setView] = useState('system')
-    const [currentSector, setCurrentSector] = useState([0,0])
+    const [currentSector, setCurrentSector] = useState({})
+    const [currentID, setCurrentID] = useState([0, 0])
 
     const solarSystem = useQuery("system", fetchSystem)
 
     useEffect(() => {
         if (solarSystem.data) {
-            if (!myP5 || !myP5.inSystemView()){
-                switch (view) {
-                    case "system":
-                        myP5 && myP5.remove()
-                        setMyP5(new p5(system, ref.current))
-                        break;
-                    case "sector":
-                        myP5 && myP5.remove()
-                        setMyP5(new p5(sector, ref.current))
-                        break;
-                    default:
-                        break;
-                }
+            switch (view) {
+                case "system":
+                    myP5 && myP5.remove()
+                    setMyP5(new p5(system, ref.current))
+                    break;
+                case "sector":
+                    myP5 && myP5.remove()
+                    setMyP5(new p5(sector, ref.current))
+                    break;
+                default:
+                    break;
             }
         } else {
             myP5 && myP5.remove()
@@ -226,20 +198,9 @@ const Display = () => {
         }
     }, [solarSystem.data, view]);
 
-    useEffect(() => {
-        if(checkFirstRender.current){
-            checkFirstRender.current = false
-            return
-        }
-        if(view === "sector") {
-            myP5 && myP5.remove()
-            setMyP5(new p5(sector, ref.current))
-        }
-    }, [currentSector, view])
-
     return <>
         <div className="simulator-container">
-            <div id="orrery" ref={ref} style={{height: "100%"}}/>
+            <div id="orrery" ref={ref} style={{ height: "100%" }} />
         </div>
         <p />
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
