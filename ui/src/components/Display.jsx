@@ -123,6 +123,12 @@ const Display = () => {
     const system = p => {
         const data = solarSystem
 
+        p.preload = () => {
+            planets && planets.forEach((planet) => {
+                planet.img = p.loadImage(`${planet.name}.png`);
+            })
+        }
+
         p.setup = () => {
             const p5Div = document.getElementById("orrery");
             if(p5Div){
@@ -130,7 +136,6 @@ const Display = () => {
             } else {
                 p.noCanvas()
             }
-            console.log(planetOrbits(0))
         }
 
         p.draw = () => {
@@ -150,7 +155,9 @@ const Display = () => {
                 p.fill(planet.color);
                 const x = CENTER_X + orreryRadius * positions[planet.name][0] / largestCircle;
                 const y = CENTER_Y + orreryRadius * positions[planet.name][1] / largestCircle;
-                p.circle(x, y, 0.5*10**4 * orreryRadius * planet.radius / largestCircle)
+                const image = planet.img
+                const diameter = 0.5*10**4 * orreryRadius * planet.radius / largestCircle * 2
+                p.image(image, x, y, diameter, diameter)
             })
         }
     }
