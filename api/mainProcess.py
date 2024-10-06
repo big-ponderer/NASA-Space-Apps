@@ -74,8 +74,6 @@ class Asteroid:
             overunder = -1
         self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), math.abs (self.sunCoords[1] -secy), self.sunCoords[2]]
 
-
-
 #The individual data for each sector (will be passed to front end)
 class indivSect:
     def __init__(self, index):
@@ -93,59 +91,57 @@ class indivSect:
     def calcDensity(self):
         self.density = len(self.asteroidList) / self.area
 
+def getSectorData():
+    #Change this to change asteroid file
+    asteroidListCSV = pd.read_csv("sbdb_query_results.csv")
+
+    testSector = sector([0, 0.5, 0.75, 1, 1.25,  1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 40) 
+
+    print(asteroidListCSV.head())
+
+    #create the first iteration of the asteroid list, without any parameters
+    asteroidList = []
+
+    #make an array of sectors
+    mainArray = [[indivSect([i,j]) for i in range( int(360/testSector.waveTheta))] for j in range( int(len(testSector.getCircleList()))-1)]
+
+
+
+
+
+
+
+    for index, row in asteroidListCSV.iterrows():
         
+        asteroid = Asteroid(
+            name=row['full_name'],
+            diameter=row['diameter'],
+            mass=row['GM'],
+            period=row['per_y'],
+            displayName=row['name'],
+            NEO = row['neo'] == 'Y',
+            PHA = row['pha'] == 'Y'
+        )
+        asteroidList.append(asteroid)
 
-#Change this to change asteroid file
-asteroidListCSV = pd.read_csv("api/routers/MinorObjects_code_and_file/sbdb_query_results.csv")
+    #asteroidList[0].printData()
 
-testSector = sector([0, 0.5, 0.75, 1, 1.25,  1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 40) 
-
-print(asteroidListCSV.head())
-
-#create the first iteration of the asteroid list, without any parameters
-asteroidList = []
-
-#make an array of sectors
-mainArray = [[indivSect([i,j]) for i in range( int(360/testSector.waveTheta))] for j in range( int(len(testSector.getCircleList()))-1)]
-
-
-
-
-
-
-
-for index, row in asteroidListCSV.iterrows():
-    
-    asteroid = Asteroid(
-        name=row['full_name'],
-        diameter=row['diameter'],
-        mass=row['GM'],
-        period=row['per_y'],
-        displayName=row['name'],
-        NEO = row['neo'] == 'Y',
-        PHA = row['pha'] == 'Y'
-    )
-    asteroidList.append(asteroid)
-
-#asteroidList[0].printData()
-
-#Do Leo andKaushik's stuff here (call the API and get data), as well as define the sector of each asteroid
-#Add the asteroid to the appropriate sector
-for asteroid in asteroidList:
-    #call the API and get data
+    #Do Leo andKaushik's stuff here (call the API and get data), as well as define the sector of each asteroid
+    #Add the asteroid to the appropriate sector
+    for asteroid in asteroidList:
+        #call the API and get data
 
 
-    asteroid.determineSector(testSector)
-    mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
+        asteroid.determineSector(testSector)
+        mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
 
 
-#process area and density for each sector
-for i in range (0, len(testSector.getCircleList())-1):
-    for j in range (0, int(360/testSector.waveTheta)) :
-        mainArray[i][j].calcArea(testSector)
-        mainArray[i][j].calcDensity()
+    #process area and density for each sector
+    for i in range (0, len(testSector.getCircleList())-1):
+        for j in range (0, int(360/testSector.waveTheta)) :
+            mainArray[i][j].calcArea(testSector)
+            mainArray[i][j].calcDensity()
 
-#***Get rid of the list of asteroids****
-del asteroidList
-    
+    return mainArray
+        
 

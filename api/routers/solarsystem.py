@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 import httpx
 import numpy as np
 from pydantic import BaseModel
+from mainProcess import getSectorData
 
 router = APIRouter()
 
@@ -94,11 +95,7 @@ class HorizonsAPIClient:
         return np.array(vectors)
 
 
-
-
-
-@router.get("/solarsystem/{asteroid_name}")
-async def read_item(asteroid_name):
+async def get_asteroid(asteroid_name):
     try:
         # Hardcoding command for Mars ('499')
         client = HorizonsAPIClient(command = asteroid_name)  # Mars' command is '499'
@@ -109,7 +106,17 @@ async def read_item(asteroid_name):
             vectors = client.extract_vectors(ephemeris_data)
             return {"vectors": vectors.tolist()}
         else:
-            raise HTTPException(status_code=500, detail="Failed to retrieve ephemeris data")
+            return {
+                "status_code": 500, 
+                "detail": "Failed to retrieve ephemeris data"
+            }
         
     except httpx.HTTPStatusError as exc:
         raise HTTPException(status_code=exc.response.status_code, detail=str(exc))
+
+
+@router.get("/solarsystem")
+def read_item():
+    print("called")
+    data = getSectorData()
+    return data
