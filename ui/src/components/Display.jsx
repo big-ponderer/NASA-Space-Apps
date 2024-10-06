@@ -150,7 +150,15 @@ const Display = () => {
             data.sectors.slice().reverse().forEach((ring, i) => {
                 ring.forEach((sector, j) => {
                     p.fill(200 * sector.density + 55, 0, 200 * sector.density + 55);
-                    console.log([data.sectionAngle*j, data.sectionAngle*(j+1)])
+                    //check if mouse is on sector
+                    const distance = p.dist(p.mouseX, p.mouseY, CENTER_X, CENTER_Y)
+                    const angle = (p.TAU + p.atan2(p.mouseY - CENTER_Y, p.mouseX - CENTER_X)) % p.TAU
+                    if (distance < orreryRadius * sortedRadii[i] / largestCircle && (sortedRadii.length <= i + 1 || distance > orreryRadius * sortedRadii[i+1] / largestCircle) && angle > data.sectionAngle*j && angle < data.sectionAngle*(j+1)) {
+                        p.fill(255, 255, 255);
+                        if (p.mouseIsPressed) {
+                            setView("sector")
+                        }
+                    }
                     p.arc(CENTER_X, CENTER_Y, orreryRadius * sortedRadii[i] / largestCircle, orreryRadius * sortedRadii[i] / largestCircle, data.sectionAngle*j, data.sectionAngle*(j+1));
                 })
             })
@@ -178,11 +186,12 @@ const Display = () => {
         switch (view) {
             case "system":
                 // solar system api call
-                setSolarSystem(PLACEHOLDER_SYSTEM)
+                setSolarSystem({...PLACEHOLDER_SYSTEM, rehydrate: !PLACEHOLDER_SYSTEM.rehydrate})
                 break;
             case "sector":
                 // sector api call
-                setCurrentSector(PLACEHOLDER_DATA)
+                console.log("called")
+                setCurrentSector({...PLACEHOLDER_DATA, rehydrate: !PLACEHOLDER_DATA.rehydrate})
                 break;
             default:
                 setMyP5(null)
@@ -199,6 +208,7 @@ const Display = () => {
     }, [solarSystem])
 
     useEffect(() => {
+        console.log("sector useeffect called")
         myP5 && myP5.remove()
         setMyP5(new p5(sector, ref.current))
     }, [currentSector])
