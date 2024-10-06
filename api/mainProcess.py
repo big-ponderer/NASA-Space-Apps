@@ -1,6 +1,8 @@
 import pandas as pd
 import math 
 from get_asteroids import get_asteroid
+from tqdm import tqdm
+
 """
 Last circle does not define a sector
 Units for angles are in degrees
@@ -80,7 +82,7 @@ class AllAsteroids:
         self.asteroidListCSV = []
         self.asteroidList = []
 
-        self.testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 2) 
+        self.testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 10, 40], 2) 
         self.mainArray = [[indivSect([i,j]) for i in range(int(360/self.testSector.waveTheta))] for j in range( int(len(self.testSector.getCircleList()))-1)]
         self.readCSV(file_name)
         
@@ -101,7 +103,7 @@ class AllAsteroids:
 
 
     async def updateAllCoords(self):
-        for asteroid in self.asteroidList:
+        for asteroid in tqdm(self.asteroidList, desc="Processing asteroids", unit="asteroid"):
         #call the API and get data
             resp = await get_asteroid(asteroid.displayName)
 
@@ -114,6 +116,9 @@ class AllAsteroids:
                 print(asteroid.sector, "********", asteroid.displayName)
                 
                 self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
+                # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcArea(self.testSector)
+                # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcDensity()
+
 
         # print("main file****", self.mainArray)
         return self.mainArray
@@ -151,10 +156,10 @@ class indivSect:
     
     def calcArea(self, sec):
         self.area = math.pi * (sec.getCircleList()[self.index[0]+1] **2 - sec.getCircleList()[self.index[0]] ** 2) * sec.waveTheta/360
+        return self.area
         
-    # def calcDensity(self):
-    #     self.density = len(self.asteroidSectorList) / self.area
-
+    def calcDensity(self):
+         self.density = len(self.asteroidSectorList) / self.area
 
 
 # async def getSolarSystem():
