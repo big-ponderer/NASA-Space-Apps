@@ -23,7 +23,10 @@ const PLACEHOLDER_DATA = {
     ]
 }
 
-const PLACEHOLDER_SYSTEM = {}
+const PLACEHOLDER_SYSTEM = {
+    radii: [5, 4, 3, 2, 1],
+    sectionAngle: 45
+}
 
 const Display = () => {
     const sector = p => {
@@ -57,7 +60,7 @@ const Display = () => {
                     }
                 ]
             }
-            p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+            p.createCanvas(p.displayWidth, p.displayHeight, p.WEBGL);
             cam = p.createCamera(0, 0, 0);
             p.noCursor();
         }
@@ -109,8 +112,19 @@ const Display = () => {
     }
 
     const system = p => {
-        p.setup = () => { p.createCanvas(p.windowWidth, p.windowHeight) }
-        p.draw = () => { p.background(220) }
+        const data = solarSystem
+
+        p.setup = () => {
+            p.createCanvas(p.displayWidth, p.displayHeight)
+        }
+
+        p.draw = () => {
+            p.ellipseMode(p.RADIUS)
+            p.background(10, 10, 44);
+            const orreryRadius = 10//0.9 * Math.min(p.displayHeight, p.displayWidth) / 4;
+            console.log(p.displayWidth, p.displayHeight)
+            p.circle(p.displayWidth/2, p.displayHeight/2, orreryRadius);
+        }
     }
 
     const [myP5, setMyP5] = useState(null)
@@ -141,7 +155,7 @@ const Display = () => {
 
     return <>
         <div className="simulator-container">
-            <div ref={ref}/>
+            <div ref={ref} />
         </div>
         <p />
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
