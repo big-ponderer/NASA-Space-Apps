@@ -1,3 +1,5 @@
+import { Utils } from '../functions.js';
+
 export default function loadingScreen(p) {
     const numStars = 500;
     let stars = [];
@@ -5,7 +7,8 @@ export default function loadingScreen(p) {
     p.inSystemView = () => false;
 
     p.setup = () => {
-        p.createCanvas(600, 600);
+        const p5Div = document.getElementById("orrery");
+        p.createCanvas(Utils.elementWidth(p5Div), Utils.elementHeight(p5Div));
         p.stroke(255);
         p.strokeWeight(2);
 
@@ -15,7 +18,7 @@ export default function loadingScreen(p) {
     }
 
     p.draw = () => {
-        p.background(0, 50);
+        p.background(10, 10, 44, 50);
 
         const acc = 0.1
 
