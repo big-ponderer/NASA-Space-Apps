@@ -91,7 +91,7 @@ class indivSect:
     def calcDensity(self):
         self.density = len(self.asteroidList) / self.area
 
-def getSectorData():
+def getSolarSystem():
     #Change this to change asteroid file
     asteroidListCSV = pd.read_csv("sbdb_query_results.csv")
 

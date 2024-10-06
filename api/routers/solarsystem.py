@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 import httpx
 import numpy as np
 from pydantic import BaseModel
-from mainProcess import getSectorData
+from mainProcess import getSolarSystem
 
 router = APIRouter()
 
@@ -118,5 +118,5 @@ async def get_asteroid(asteroid_name):
 @router.get("/solarsystem")
 def read_item():
     print("called")
-    data = getSectorData()
+    data = getSolarSystem()
     return data
