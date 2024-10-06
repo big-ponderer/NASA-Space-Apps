@@ -5,6 +5,8 @@ import { useQuery } from 'react-query'
 import { fetchSystem } from '../queries.js'
 import loadingScreen from './loadingScreen.js'
 
+const MODEL_SIZE = 200
+
 const planets = [
     { name: "Mercury", color: "gray", radius: 1.6 * 10 ** -5 }, //in AU
     { name: "Venus", color: "yellow", radius: 4.0 * 10 ** -5 },
@@ -20,13 +22,10 @@ const getSectorColor = density => {
     return [red, green, blue]
 }
 
-const renderSector = (data, p, setActiveAsteroid) => {
+const renderSector = (data, p, setActiveAsteroid, model) => {
     p.push()
-    let currentX = 0;
-    let currentY = 0;
-    let currentZ = 0;
     data.asteroids && data.asteroids.forEach(asteroid => {
-        if (asteroid.position) {
+        if (asteroid.position && model) {
             //detect which asteroid is being looked at if any
             const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
             const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
@@ -36,21 +35,20 @@ const renderSector = (data, p, setActiveAsteroid) => {
             } else {
                 setActiveAsteroid(null)
             }
-            currentX = asteroid.position[0] - currentX;
-            currentY = asteroid.position[1] - currentY;
-            currentZ = asteroid.position[2] - currentZ;
-            p.translate(currentX, currentY, currentZ);
-            p.noStroke()
-            p.sphere(asteroid.radius * 5 * 10 ** 5);
-            p.translate(-currentX, -currentY, -currentZ);
-            if (asteroid.velocity) {
+            p.push()
+            p.translate(asteroid.position[0], asteroid.position[1], asteroid.position[2]);
+            //p.noStroke()
+            p.scale((asteroid.radius / MODEL_SIZE) * 5 * 10 ** 5);
+            p.model(model);
+            p.pop()
+            /*if (asteroid.velocity) {
                 const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10 ** 10)
                 const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10 ** 10)
                 p.strokeWeight(asteroid.radius * 5 * 10 ** 2)
                 p.stroke(255)
                 p.smooth()
                 p.line(...point1, ...point2)
-            }
+            }*/
         }
     })
     p.pop()
@@ -59,6 +57,7 @@ const renderSector = (data, p, setActiveAsteroid) => {
 const Display = () => {
     const sector = p => {
         let cam;
+        let asteroidSTL;
         let angleX = 0;
         let angleY = 0;
         let moveSpeed = 0.01;
@@ -74,6 +73,10 @@ const Display = () => {
             solarSystem.data.sectors[currentID[0] + 1] && solarSystem.data.sectors[currentID[0] + 1][currentID[1] + 1],
         ]
         p.inSystemView = () => false
+
+        p.preload = () => {
+            asteroidSTL = p.loadModel('asteroid1.stl');
+        }
 
         p.setup = () => {
             //p.createCanvas(p.displayWidth, p.displayHeight, p.WEBGL);
@@ -129,8 +132,7 @@ const Display = () => {
             p.push();
             p.noStroke();
             //asteroid color
-            p.fill(139, 69, 19);
-            renderSector(data, p, setActiveAsteroid);
+            renderSector(data, p, setActiveAsteroid, asteroidSTL);
             neighboringSectors.forEach(sector => {renderSector(sector, p, setActiveAsteroid)});
             p.pop();
         }
