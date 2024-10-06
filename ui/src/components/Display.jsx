@@ -127,6 +127,7 @@ const Display = () => {
 
     const system = p => {
         const data = solarSystem
+        let zoom = 1
 
         p.preload = () => {
             planets && planets.forEach((planet) => {
@@ -140,6 +141,14 @@ const Display = () => {
         }
 
         p.draw = () => {
+            console.log(zoom)
+            if(p.keyIsDown(87)){
+                zoom += 0.01
+            }
+            if(p.keyIsDown(83) && zoom > 0.05) {
+                zoom -= 0.01
+            }
+
             p.ellipseMode(p.RADIUS)
             p.background(10, 10, 44);
             const orreryRadius = 0.9 * Math.min(p.height, p.width) / 2;
@@ -153,23 +162,23 @@ const Display = () => {
                     //check if mouse is on sector
                     const distance = p.dist(p.mouseX, p.mouseY, CENTER_X, CENTER_Y)
                     const angle = (p.TAU + p.atan2(p.mouseY - CENTER_Y, p.mouseX - CENTER_X)) % p.TAU
-                    if (distance < orreryRadius * sortedRadii[i] / largestCircle && (sortedRadii.length <= i + 1 || distance > orreryRadius * sortedRadii[i+1] / largestCircle) && angle > data.sectionAngle*j && angle < data.sectionAngle*(j+1)) {
+                    if (distance < zoom * orreryRadius * sortedRadii[i] / largestCircle && (sortedRadii.length <= i + 1 || distance > zoom * orreryRadius * sortedRadii[i+1] / largestCircle) && angle > data.sectionAngle*j && angle < data.sectionAngle*(j+1)) {
                         p.fill(255, 255, 255);
-                        if (p.mouseIsPressed) {
+                        if (p.mouseIsPressed && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
                             setView("sector")
                         }
                     }
-                    p.arc(CENTER_X, CENTER_Y, orreryRadius * sortedRadii[i] / largestCircle, orreryRadius * sortedRadii[i] / largestCircle, data.sectionAngle*j, data.sectionAngle*(j+1));
+                    p.arc(CENTER_X, CENTER_Y, zoom * orreryRadius * sortedRadii[i] / largestCircle, zoom * orreryRadius * sortedRadii[i] / largestCircle, data.sectionAngle*j, data.sectionAngle*(j+1));
                 })
             })
             const positions = planetOrbits(p.frameCount)
             planets.forEach((planet) => {
                 p.noStroke()
                 p.fill(planet.color);
-                const x = CENTER_X + orreryRadius * positions[planet.name][0] / largestCircle;
-                const y = CENTER_Y + orreryRadius * positions[planet.name][1] / largestCircle;
+                const x = CENTER_X + zoom * orreryRadius * positions[planet.name][0] / largestCircle;
+                const y = CENTER_Y + zoom * orreryRadius * positions[planet.name][1] / largestCircle;
                 const image = planet.img
-                const diameter = 0.5*10**4 * orreryRadius * planet.radius / largestCircle * 2
+                const diameter = zoom*0.5*10**4 * orreryRadius * planet.radius / largestCircle * 2
                 p.image(image, x, y, diameter, diameter)
             })
         }
@@ -181,6 +190,7 @@ const Display = () => {
     const [view, setView] = useState('sector')
     const [solarSystem, setSolarSystem] = useState({})
     const [currentSector, setCurrentSector] = useState({})
+    //const [zoom, setZoom] = useState(1)
 
     useEffect(() => {
         switch (view) {
@@ -219,6 +229,7 @@ const Display = () => {
         </div>
         <p />
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
+        {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
     </>
 }
 
