@@ -2,3 +2,5 @@ fastapi[all]
 uvicorn[all]
 numpy[all]
 pandas
+tqdm
+requests
