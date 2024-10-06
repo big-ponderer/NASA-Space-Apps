@@ -34,7 +34,7 @@ const renderSector = (data, p, setActiveAsteroid, models) => {
             const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
             const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
             if (/*distance < 50 && */angle > asteroidAngle - p.PI / 8 && angle < asteroidAngle + p.PI / 8) {
-                setActiveAsteroid(asteroid.position[0])
+                setActiveAsteroid(asteroid.name)
             } else {
                 setActiveAsteroid(null)
             }
@@ -67,8 +67,8 @@ const Display = () => {
         let data = solarSystem.data.sectors[currentID[0]][currentID[1]]
         let neighboringSectors = []
         if (solarSystem){
-            for(let i = currentID[0]-2; i<currentID[0]+3; i++){
-                for(let j = currentID[1]-2; j<currentID[1]+3; j++){
+            for(let i = Math.max(currentID[0]-2, 0); i<Math.min(currentID[0]+3, 23); i++){
+                for(let j = Math.max(currentID[1]-2, 0); j<Math.min(currentID[1]+3, 23); j++){
                     neighboringSectors.push(solarSystem.data.sectors[i][j])
                 }
             }
@@ -256,11 +256,6 @@ const Display = () => {
     }, [popupOpen])
 
     return <>
-        <header className="header">
-            <h1 className="title">{activeAsteroid && "Now Observing:"}  {activeAsteroid || "Orrery"}</h1>
-            <p className="subtitle">X position: {cameraPos.x}, Y position: {cameraPos.y}, Z position: {cameraPos.z}</p>
-        </header>
-
         <div className="simulator-container">
             <div id="orrery" ref={ref} style={{ height: "100%" }} />
         </div>
