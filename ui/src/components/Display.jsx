@@ -67,8 +67,8 @@ const Display = () => {
         let data = solarSystem.data.sectors[currentID[0]][currentID[1]]
         let neighboringSectors = []
         if (solarSystem){
-            for(let i = currentID[0]-2; i<currentID[0]+3; i++){
-                for(let j = currentID[1]-2; j<currentID[1]+3; j++){
+            for(let i = Math.max(currentID[0]-2, 0); i<Math.min(currentID[0]+3, 23); i++){
+                for(let j = Math.max(currentID[1]-2, 0); j<Math.min(currentID[1]+3, 23); j++){
                     neighboringSectors.push(solarSystem.data.sectors[i][j])
                 }
             }
