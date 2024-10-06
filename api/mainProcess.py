@@ -1,5 +1,6 @@
 import pandas as pd
 import math 
+from get_asteroids import get_asteroid
 """
 Last circle does not define a sector
 Units for angles are in degrees
@@ -54,7 +55,7 @@ class Asteroid:
     def determineSectorCoords(self, sec):
         thetaR = self.sector[1] * sec.waveTheta
         secx = 0
-        secy =0\
+        secy =0
         #Overunder says whether the value is on the wider x size of a quadrant, and x has to be negative
         overunder =1
         if thetaR < 90:
@@ -82,6 +83,7 @@ class indivSect:
         self.asteroidList = []
         self.area = 0
         self.density = 0
+
     def addAsteroid(self, asteroid):
         self.asteroidList.append(asteroid)
     
@@ -91,11 +93,11 @@ class indivSect:
     def calcDensity(self):
         self.density = len(self.asteroidList) / self.area
 
-def getSolarSystem():
+async def getSolarSystem():
     #Change this to change asteroid file
-    asteroidListCSV = pd.read_csv("sbdb_query_results.csv")
+    asteroidListCSV = pd.read_csv("sbdb_query_results-3.csv")
 
-    testSector = sector([0, 0.5, 0.75, 1, 1.25,  1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 40) 
+    testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 40) 
 
     print(asteroidListCSV.head())
 
@@ -126,22 +128,25 @@ def getSolarSystem():
 
     #asteroidList[0].printData()
 
-    #Do Leo andKaushik's stuff here (call the API and get data), as well as define the sector of each asteroid
+    #Do Leo and Kaushik's stuff here (call the API and get data), as well as define the sector of each asteroid
     #Add the asteroid to the appropriate sector
     for asteroid in asteroidList:
         #call the API and get data
+        resp = await get_asteroid(asteroid.displayName)
 
-
-        asteroid.determineSector(testSector)
-        mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
+        if resp:
+            asteroid.sunCoords = resp[0]
+            asteroid.determineSector(testSector)
+            print(asteroid.sector, "********", asteroid.displayName)
+            mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
 
 
     #process area and density for each sector
-    for i in range (0, len(testSector.getCircleList())-1):
-        for j in range (0, int(360/testSector.waveTheta)) :
-            mainArray[i][j].calcArea(testSector)
-            mainArray[i][j].calcDensity()
+    # for i in range (0, len(testSector.getCircleList())-1):
+    #     for j in range (0, int(360/testSector.waveTheta)) :
+    #         mainArray[i][j].calcArea(testSector)
+    #         mainArray[i][j].calcDensity()
 
     return mainArray
         
-
+#getSolarSystem()
