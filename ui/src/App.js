@@ -8,9 +8,7 @@ const App = () => <div className="App">
     <p className="subtitle">use your cursor to look around. press W to move forard and S to move backward</p>
   </header>
 
-  <div className="simulator-container">
-    <Display />
-  </div>
+  <Display />
 
   <footer className="footer">
     <p className="footer-text">Created for the NASA Space Apps Challenge &copy; 2024</p>
