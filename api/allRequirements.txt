@@ -1,3 +1,6 @@
 fastapi[all]
 uvicorn[all]
 numpy[all]
+pandas[all]
+httpx[all]
+orjson[all]
