@@ -31,7 +31,7 @@ async def read_item():
                     asteroid_dict = {
                         "position": asteroid.sunCoords, 
                         "velocity": asteroid.velocity,
-                        "radius": asteroid.diameter
+                        "radius": asteroid.diameter/2*6.68459e-9
                     }
                     asteroid_list.append(asteroid_dict)
 
