@@ -3,6 +3,7 @@ import math
 """
 Last circle does not define a sector
 Units for angles are in degrees
+90 degrees must be a multiple of waveTheta
 """
 # Stores the dimensions of the sectors so we can change them
 class sector:
@@ -17,6 +18,8 @@ class sector:
         return self.circleList
     def orderCircles(self):
         self.circleList.sort()
+
+
 
 #The asteroid class
 class Asteroid:
@@ -36,17 +39,41 @@ class Asteroid:
         self.sector = [0,0]
      
     def printData(self):
-        print(f"Asteroid(name={self.name}, diameter={self.diameter}, mass={self.mass}, period={self.period}, displayName={self.displayName}, NEO={self.NEO}, PHA={self.PHA})")
+        print("Asteroid(name={self.name}, diameter={self.diameter}, mass={self.mass}, period={self.period}, displayName={self.displayName}, NEO={self.NEO}, PHA={self.PHA})")
 
     def returnSector(self):
         return self.sector()
     
     def determineSector (self, sec):
         for (i, circle) in enumerate(sec.getCircleList()):
-            if math.hypot(self.sunCoords[0],self.sunCoords[1]) > circle:
-                self.sector[0] = i
+            if math.hypot(self.sunCoords[0],self.sunCoords[1]) < circle:
+                self.sector[0] = i - 1
                 break
-        self.sector [1] = int(math.atan2(self.sunCoords[1], self.sunCoords[0]) / sec.getTheta())
+        self.sector[1] = int(math.atan2(self.sunCoords[1], self.sunCoords[0])/sec.waveTheta)
+    
+    def determineSectorCoords(self, sec):
+        thetaR = self.sector[1] * sec.waveTheta
+        secx = 0
+        secy =0\
+        #Overunder says whether the value is on the wider x size of a quadrant, and x has to be negative
+        overunder =1
+        if thetaR < 90:
+            secx = math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
+            secy = math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
+        elif thetaR < 180:
+            secx = -math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
+            secy = math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
+        elif thetaR < 270:
+            secx = -math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
+            secy = -math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
+        else:
+            secx = math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
+            secy = -math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
+        
+        if (thetaR < math.atan2(self.sunCoords[1], self.sunCoords[0])):
+            overunder = -1
+        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), math.abs (self.sunCoords[1] -secy), self.sunCoords[2]]
+
 
 
 #The individual data for each sector (will be passed to front end)
@@ -71,7 +98,7 @@ class indivSect:
 #Change this to change asteroid file
 asteroidListCSV = pd.read_csv("api/routers/MinorObjects_code_and_file/sbdb_query_results.csv")
 
-testSector = sector([0, 0.5, 0.75, 1, 1.25,  1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5], 2) 
+testSector = sector([0, 0.5, 0.75, 1, 1.25,  1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 40) 
 
 print(asteroidListCSV.head())
 
