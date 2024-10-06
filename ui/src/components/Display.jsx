@@ -4,7 +4,7 @@ import { Utils, planetOrbits } from '../functions.js'
 import { useQuery } from 'react-query'
 import { fetchSystem } from '../queries.js'
 import loadingScreen from './loadingScreen.js'
-
+import Star from "./star.js"
 const MODEL_SIZE = 200
 
 const planets = [
@@ -147,6 +147,10 @@ const Display = () => {
         let zoom = 1
         p.inSystemView = () => true
 
+        let stars = []
+        let numstars = 800
+
+    
         p.preload = () => {
             planets && planets.forEach((planet) => {
                 planet.img = p.loadImage(`${planet.name}.png`);
@@ -156,6 +160,10 @@ const Display = () => {
         p.setup = () => {
             const p5Div = document.getElementById("orrery");
             p.createCanvas(Utils.elementWidth(p5Div), Utils.elementHeight(p5Div));
+
+            for (let i = 0; i<numstars; i++){
+                stars.push(new Star(p))
+            }
         }
 
         p.draw = () => {
@@ -168,6 +176,12 @@ const Display = () => {
 
             p.ellipseMode(p.RADIUS)
             p.background(3, 3, 11);
+
+            for (let star of stars) {
+                star.update();
+                star.show();
+            }
+    
             const orreryRadius = 0.9 * Math.min(p.height, p.width) / 2;
             const CENTER_X = p.width / 2;
             const CENTER_Y = p.height / 2;
