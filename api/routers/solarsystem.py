@@ -31,7 +31,13 @@ async def read_item():
                     asteroid_dict = {
                         "position": asteroid.sunCoords, 
                         "velocity": asteroid.velocity,
-                        "radius": asteroid.diameter
+                        "radius": asteroid.diameter/2,
+                        "name": asteroid.displayName,
+                        "nearEarth": asteroid.NEO == 'Y',
+                        "hazardous": asteroid.PHA == 'Y',
+                        "mass": asteroid.mass/6.67E-11,
+                        "period": asteroid.period,
+                        "intestRez": asteroid.materialsofInterest()
                     }
                 if len(mainArray[i][j].asteroidSectorList) >0:
                     cam_pos = (sum_pos/len(mainArray[i][j].asteroidSectorList)).tolist()

@@ -52,42 +52,16 @@ class Asteroid:
     
     def materialsofInterest(self):
         if self.mass :
-            self.density = self.mass/1.989E30 / (4/3 * math.pi * (self.diameter*1000/2)**3)
-            if self.density < 1420:
+            density = self.mass/6.67E-11 / (4/3 * math.pi * (self.diameter*1000/2)**3)
+            if density < 1420:
                 return "not many"
-            elif self.density < 4000:
+            elif density < 4000:
                 "nickel and iron"
             else:
                 return "rare metals"
         else:
             return "unknown"
         
-    def determineSectorCoords(self, sec):
-        thetaR = self.sector[1] * sec.waveTheta
-        secx = 0
-        secy =0
-        #Overunder says whether the value is on the wider x size of a quadrant, and x has to be negative
-        overunder =1
-        if thetaR < 90:
-            secx = math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
-        elif thetaR < 180:
-            secx = -math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
-        elif thetaR < 270:
-            secx = -math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = -math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
-        else:
-            secx = math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
-            secy = -math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
-        
-        degrees = math.degrees(math.atan2(self.sunCoords[1], self.sunCoords[0]))
-        if degrees < 0:
-            degrees += 360
-        if (thetaR < degrees):
-            overunder = -1
-        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), abs(self.sunCoords[1] -secy), self.sunCoords[2]]
-
 
 class AllAsteroids:
     def __init__(self, file_name):
