@@ -16,9 +16,11 @@ async def read_item():
         #print(mainArray)
         sectors = []
         for i in range(len(mainArray)):
+            one_layer = []
             for j in range(len(mainArray[i])):
                 density = len(mainArray[i][j].asteroidSectorList)
-                sectors.append({"id": [i, j], "density": density})
+                one_layer.append({"id": [i, j], "density": density})
+            sectors.append(one_layer)
         #print(sectors, "working")
         print(type(sectors))
         ret = {
