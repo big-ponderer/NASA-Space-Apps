@@ -79,7 +79,7 @@ class Asteroid:
             degrees += 360
         if (thetaR < degrees):
             overunder = -1
-        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), math.abs (self.sunCoords[1] -secy), self.sunCoords[2]]
+        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), abs (self.sunCoords[1] -secy), self.sunCoords[2]]
 
 #The individual data for each sector (will be passed to front end)
 class indivSect:
@@ -143,7 +143,8 @@ async def getSolarSystem():
         if resp:
             asteroid.sunCoords = resp[0]
             asteroid.determineSector(testSector)
-            print(asteroid.sector, "********", asteroid.displayName)
+            asteroid.determineSectorCoords(testSector)
+            print( "********", asteroid.displayName, "sector coords", asteroid.sectorCoords)
             mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
 
 
