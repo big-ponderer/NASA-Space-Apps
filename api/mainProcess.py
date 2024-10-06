@@ -72,6 +72,7 @@ class Asteroid:
             degrees += 360
         if (thetaR < degrees):
             overunder = -1
+<<<<<<< HEAD
         self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), abs(self.sunCoords[1] -secy), self.sunCoords[2]]
 
 
@@ -136,6 +137,9 @@ class sector:
 
     
 
+=======
+        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), abs (self.sunCoords[1] -secy), self.sunCoords[2]]
+>>>>>>> 307c93b8f9d4d997394865406445e87fa9434804
 
 #The individual data for each sector (will be passed to front end)
 class indivSect:
@@ -209,6 +213,46 @@ class indivSect:
 #     #         mainArray[i][j].calcArea(testSector)
 #     #         mainArray[i][j].calcDensity()
 
+<<<<<<< HEAD
     # return mainArray
+=======
+
+    for index, row in asteroidListCSV.iterrows():
+        
+        asteroid = Asteroid(
+            name=row['full_name'],
+            diameter=row['diameter'],
+            mass=row['GM'],
+            period=row['per_y'],
+            displayName=row['name'],
+            NEO = row['neo'] == 'Y',
+            PHA = row['pha'] == 'Y'
+        )
+        asteroidList.append(asteroid)
+
+    #asteroidList[0].printData()
+
+    #Do Leo and Kaushik's stuff here (call the API and get data), as well as define the sector of each asteroid
+    #Add the asteroid to the appropriate sector
+    for asteroid in asteroidList:
+        #call the API and get data
+        resp = await get_asteroid(asteroid.displayName)
+
+        if resp:
+            asteroid.sunCoords = resp[0]
+            asteroid.determineSector(testSector)
+            asteroid.determineSectorCoords(testSector)
+            print( "********", asteroid.displayName, "sector coords", asteroid.sectorCoords)
+            mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
+
+
+    #process area and density for each sector
+    # for i in range (0, len(testSector.getCircleList())-1):
+    #     for j in range (0, int(360/testSector.waveTheta)) :
+    #         mainArray[i][j].calcArea(testSector)
+    #         mainArray[i][j].calcDensity()
+
+    return mainArray
+>>>>>>> 307c93b8f9d4d997394865406445e87fa9434804
         
 #getSolarSystem()
