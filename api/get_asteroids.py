@@ -15,7 +15,7 @@ class HorizonsAPIClient:
         self.start_time = "2024-10-04"  # Start time of ephemeris
         self.stop_time = "2024-10-05"  # Stop time of ephemeris
         self.step_size = "1 d"  # Time step size
-        self.quantities = "1,9,20,23,24,29"  # Requested quantities
+        self.quantities = "1"  # Requested quantities
 
     def build_url(self) -> str:
         # Build the URL by appending the query parameters
