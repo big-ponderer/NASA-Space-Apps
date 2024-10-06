@@ -256,11 +256,6 @@ const Display = () => {
     }, [popupOpen])
 
     return <>
-        <header className="header">
-            <h1 className="title">{activeAsteroid && "Now Observing:"}  {activeAsteroid || "Orrery"}</h1>
-            <p className="subtitle">X position: {cameraPos.x}, Y position: {cameraPos.y}, Z position: {cameraPos.z}</p>
-        </header>
-
         <div className="simulator-container">
             <div id="orrery" ref={ref} style={{ height: "100%" }} />
         </div>
