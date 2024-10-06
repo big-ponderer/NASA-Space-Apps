@@ -26,7 +26,7 @@ export function planetOrbits(t) {
         { a: 0.7233291917901979, e: 0.006737279122322842, i: 3.394396433432916, Omega: 76.61179678719908, omega: 55.24210717207938, M0: 138.9937083519449, name: "Venus" }, // Venus
         { a: 1.000777360389874, e: 0.0168738010671458, i: 0.00157039561960013, Omega: 157.0565801356092, omega: 298.7945712955125, M0: 273.3295178212163, name: "Earth" }, // Earth
         { a: 1.523780980571824, e: 0.09336432391805517, i: 1.847711557917372, Omega: 49.48980318078964, omega: 286.7211682607092, M0: 78.32680827641637, name: "Mars" }, // Mars
-        { a: 5.202574393950348, e: 0.04828245000523424, i: 1.303434425214163, Omega: 100.5216554428596, omega: 273.5659800334696, M0: 51.7126855200728,  name: "Jupiter" }, // Jupiter
+        { a: 5.202574393950348, e: 0.04828245000523424, i: 1.303434425214163, Omega: 100.5216554428596, omega: 273.5659800334696, M0: 51.7126855200728, name: "Jupiter" }, // Jupiter
     ];
 
     const G = 2.959122082855911e-4; // AU^3 / (kg * day^2)
@@ -47,7 +47,7 @@ export function planetOrbits(t) {
         const x = r_t * Math.cos(v_t);
         const y = r_t * Math.sin(v_t);
         // Append position to list
-        positionVectors[planet.name] = [x,y]
+        positionVectors[planet.name] = [x, y]
     });
 
     return positionVectors;
@@ -56,19 +56,51 @@ export function planetOrbits(t) {
 export class Utils {
     // Calculate the Width in pixels of a Dom element
     static elementWidth(element) {
-      return (
-        element.clientWidth -
-        parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-left")) -
-        parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-right"))
-      )
+        return (
+            element.clientWidth -
+            parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-left")) -
+            parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-right"))
+        )
     }
-  
+
     // Calculate the Height in pixels of a Dom element
     static elementHeight(element) {
-      return (
-        element.clientHeight -
-        parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-top")) -
-        parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-bottom"))
-      )
+        return (
+            element.clientHeight -
+            parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-top")) -
+            parseFloat(window.getComputedStyle(element, null).getPropertyValue("padding-bottom"))
+        )
     }
-  }
+}
+
+const MODEL_SIZE = 200
+
+export const renderSector = (data, p, models, handleCollisions) => {
+    p.push()
+    data.asteroids && data.asteroids.forEach((asteroid, i) => {
+        if (asteroid.position && models) {
+            //models take turns
+            const model = models[i % models.length]
+            //detect which asteroid is being looked at if any
+            const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
+            const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
+            const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
+            p.push()
+            p.translate(asteroid.position[0], asteroid.position[1], asteroid.position[2]);
+            //p.noStroke()
+            p.scale((asteroid.radius / MODEL_SIZE) * 5 * 10 ** 5);
+            p.model(model);
+            p.pop()
+            /*if (asteroid.velocity) {
+                const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10 ** 10)
+                const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10 ** 10)
+                p.strokeWeight(asteroid.radius * 5 * 10 ** 2)
+                p.stroke(255)
+                p.smooth()
+                p.line(...point1, ...point2)
+            }*/
+            handleCollisions(asteroid)
+        }
+    })
+    p.pop()
+}
