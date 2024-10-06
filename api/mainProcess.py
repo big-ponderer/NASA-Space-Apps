@@ -49,7 +49,19 @@ class Asteroid:
         if degrees < 0:
             degrees += 360
         self.sector[1] = int(degrees/sec.waveTheta)
-
+    
+    def materialsofInterest(self):
+        if self.mass :
+            self.density = self.mass/1.989E30 / (4/3 * math.pi * (self.diameter*1000/2)**3)
+            if self.density < 1420:
+                return "not many"
+            elif self.density < 4000:
+                "nickel and iron"
+            else:
+                return "rare metals"
+        else:
+            return "unknown"
+        
     def determineSectorCoords(self, sec):
         thetaR = self.sector[1] * sec.waveTheta
         secx = 0
