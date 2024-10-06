@@ -5,30 +5,6 @@ import { useQuery } from 'react-query'
 import { fetchSystem } from '../queries.js'
 import loadingScreen from './loadingScreen.js'
 
-const PLACEHOLDER_DATA = {
-    cameraPos: { x: 0, y: 0, z: 0 },
-    asteroids: [
-        {
-            current: { x: 0, y: 0, z: 0 },
-            refPoints: [
-                { x: 0, y: 0, z: 0 },
-                { x: 0, y: 0, z: 200 }
-            ],
-            radius: 50
-        },
-    ]
-}
-
-const PLACEHOLDER_SYSTEM = {
-    radii: [5, 1, 3],
-    angles: Math.PI / 1.5,
-    sectors: [
-        [{ density: 0.9 }, { density: 0.8 }, { density: 0.7 }],
-        [{ density: 0.6 }, { density: 0.5 }, { density: 0.4 }],
-        [{ density: 0.3 }, { density: 0.2 }, { density: 0.1 }]
-    ]
-}
-
 const planets = [
     { name: "Mercury", color: "gray", radius: 1.6 * 10 ** -5 }, //in AU
     { name: "Venus", color: "yellow", radius: 4.0 * 10 ** -5 },
@@ -50,9 +26,7 @@ const Display = () => {
         let angleX = 0;
         let angleY = 0;
         let moveSpeed = 5;
-        let img;
-        let data = solarSystem.data.sectors[currentID[0]][currentID[1]] || PLACEHOLDER_DATA
-
+        let data = solarSystem.data.sectors[currentID[0]][currentID[1]]
         p.inSystemView = () => false
 
         p.setup = () => {
@@ -122,7 +96,7 @@ const Display = () => {
     }
 
     const system = p => {
-        const data = solarSystem.data || PLACEHOLDER_SYSTEM
+        const data = solarSystem.data
         let zoom = 1
         p.inSystemView = () => true
 
@@ -183,9 +157,7 @@ const Display = () => {
 
     const [myP5, setMyP5] = useState(null)
     const ref = useRef()
-    const checkFirstRender = useRef(true)
     const [view, setView] = useState('system')
-    const [currentSector, setCurrentSector] = useState({})
     const [currentID, setCurrentID] = useState([0, 0])
 
     const solarSystem = useQuery("system", fetchSystem)
