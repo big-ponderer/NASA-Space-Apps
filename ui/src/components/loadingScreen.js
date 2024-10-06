@@ -22,6 +22,12 @@ export default function loadingScreen(p) {
 
         const acc = 0.1
 
+        p.textAlign(p.CENTER, p.CENTER)
+        p.textSize(60)
+        p.fill(255)
+        p.stroke(255)
+        p.text("LOADING...", p.width / 2, p.height / 2)
+
         stars = stars.filter(star => {
             star.draw();
             star.update(acc);
