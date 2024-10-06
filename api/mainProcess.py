@@ -91,12 +91,14 @@ class AllAsteroids:
     async def updateAllCoords(self, preload):
         if preload:
             coolListCSV = pd.read_csv("cooler_asteroids_coordinates.csv")
-            for index, row in tqdm(coolListCSV.iterrows()):
+            for index, row in coolListCSV.iterrows():
                 asteroid = self.asteroidList[index]
                 asteroid.sunCoords = [row["Sun Coords X"], row["Sun Coords Y"], row["Sun Coords Z"]]
                 asteroid.velocity = [row["Velocity X"], row["Velocity Y"], row["Velocity Z"]]
                 asteroid.determineSector(self.testSector)
                 print(asteroid.sector, "********", asteroid.displayName)
+                self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
+
         else:
 
             for asteroid in tqdm(self.asteroidList, desc="Processing asteroids", unit="asteroid"):
