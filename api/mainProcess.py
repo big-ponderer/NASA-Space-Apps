@@ -50,7 +50,10 @@ class Asteroid:
             if math.hypot(self.sunCoords[0],self.sunCoords[1]) < circle:
                 self.sector[0] = i - 1
                 break
-        self.sector[1] = int(math.atan2(self.sunCoords[1], self.sunCoords[0])/sec.waveTheta)
+        degrees = math.degrees(math.atan2(self.sunCoords[1], self.sunCoords[0]))
+        if degrees < 0:
+            degrees += 360
+        self.sector[1] = int(degrees/sec.waveTheta)
     
     def determineSectorCoords(self, sec):
         thetaR = self.sector[1] * sec.waveTheta
@@ -71,9 +74,12 @@ class Asteroid:
             secx = math.cos(thetaR) * sec.getCircleList()[self.sector[0]]
             secy = -math.sin(thetaR) * sec.getCircleList()[self.sector[0]]
         
-        if (thetaR < math.atan2(self.sunCoords[1], self.sunCoords[0])):
+        degrees = math.degrees(math.atan2(self.sunCoords[1], self.sunCoords[0]))
+        if degrees < 0:
+            degrees += 360
+        if (thetaR < degrees):
             overunder = -1
-        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), math.abs (self.sunCoords[1] -secy), self.sunCoords[2]]
+        self.sectorCoords = [overunder*abs(self.sunCoords[0]-secx), abs (self.sunCoords[1] -secy), self.sunCoords[2]]
 
 #The individual data for each sector (will be passed to front end)
 class indivSect:
@@ -97,7 +103,7 @@ async def getSolarSystem():
     #Change this to change asteroid file
     asteroidListCSV = pd.read_csv("sbdb_query_results-3.csv")
 
-    testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 40) 
+    testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 10, 40], 2) 
 
     print(asteroidListCSV.head())
 
@@ -137,7 +143,8 @@ async def getSolarSystem():
         if resp:
             asteroid.sunCoords = resp[0]
             asteroid.determineSector(testSector)
-            print(asteroid.sector, "********", asteroid.displayName)
+            asteroid.determineSectorCoords(testSector)
+            print( "********", asteroid.displayName, "sector coords", asteroid.sectorCoords)
             mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
 
 
