@@ -66,8 +66,8 @@ const Display = () => {
             //space purple
             p.background(10, 10, 44);
             p.ambientLight(50, 50, 50);
-            p.directionalLight(200, 200, 200, 0, 0, -1);
-            p.pointLight(255, 255, 255, 100, 100, 200);
+            p.directionalLight(100, 100, 100, 0, 0, -1);
+            p.pointLight(150, 150, 150, 100, 100, 200);
             p.specularMaterial(100, 100, 100);
             p.shininess(10);
 
@@ -106,6 +106,15 @@ const Display = () => {
                     p.translate(currentX, currentY, currentZ);
                     p.sphere(asteroid.radius);
                     p.translate(-currentX, -currentY, -currentZ);
+                    if(asteroid.velocity) {
+                        console.log(asteroid.velocity)
+                        const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10**10)
+                        const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10**10)
+                        p.strokeWeight(20)
+                        p.stroke(255)
+                        p.smooth()
+                        p.line(...point1, ...point2)
+                    }
                 }
             })
             p.pop();
