@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
+import { Utils } from '../functions.js'
 
 const PLACEHOLDER_DATA = {
     cameraPos: { x: 0, y: 0, z: 0 },
@@ -24,7 +25,7 @@ const PLACEHOLDER_DATA = {
 }
 
 const PLACEHOLDER_SYSTEM = {
-    radii: [5, 4, 3, 2, 1],
+    radii: [5, 3, 2, 1],
     sectionAngle: 45
 }
 
@@ -115,47 +116,67 @@ const Display = () => {
         const data = solarSystem
 
         p.setup = () => {
-            p.createCanvas(p.displayWidth, p.displayHeight)
+            const p5Div = document.getElementById("orrery");
+            if(p5Div){
+                p.createCanvas(Utils.elementWidth(p5Div), Utils.elementHeight(p5Div));
+            } else {
+                p.noCanvas()
+            }
         }
 
         p.draw = () => {
             p.ellipseMode(p.RADIUS)
             p.background(10, 10, 44);
-            const orreryRadius = 10//0.9 * Math.min(p.displayHeight, p.displayWidth) / 4;
-            console.log(p.displayWidth, p.displayHeight)
-            p.circle(orreryRadius, p.displayWidth/2, p.displayHeight/2);
+            const orreryRadius = 0.9 * Math.min(p.height, p.width) / 2;
+            const CENTER_X = p.width / 2;
+            const CENTER_Y = p.height / 2;
+            const largestCircle = data.radii && data.radii.sort((a, b) => b - a)[0];
+            data.radii && data.radii.forEach((radius) => {
+                p.fill(255, 255, 255, 100);
+                p.ellipse(CENTER_X, CENTER_Y, orreryRadius * radius / largestCircle, orreryRadius * radius / largestCircle);
+            })
         }
     }
 
     const [myP5, setMyP5] = useState(null)
     const ref = useRef()
+    const checkFirstRender = useRef(true)
     const [view, setView] = useState('sector')
     const [solarSystem, setSolarSystem] = useState({})
     const [currentSector, setCurrentSector] = useState({})
 
     useEffect(() => {
-        if (!ref.current) return
         switch (view) {
             case "system":
                 // solar system api call
                 setSolarSystem(PLACEHOLDER_SYSTEM)
-                myP5 && myP5.remove()
-                setMyP5(new p5(system, ref.current))
                 break;
             case "sector":
                 // sector api call
                 setCurrentSector(PLACEHOLDER_DATA)
-                myP5 && myP5.remove()
-                setMyP5(new p5(sector, ref.current))
                 break;
             default:
                 setMyP5(null)
         }
     }, [view])
 
+    useEffect(() => {
+        if(checkFirstRender.current){
+            checkFirstRender.current = false
+            return
+        }
+        myP5 && myP5.remove()
+        setMyP5(new p5(system, ref.current))
+    }, [solarSystem])
+
+    useEffect(() => {
+        myP5 && myP5.remove()
+        setMyP5(new p5(sector, ref.current))
+    }, [currentSector])
+
     return <>
         <div className="simulator-container">
-            <div ref={ref} />
+            <div id="orrery" ref={ref} style={{height: "100%"}}/>
         </div>
         <p />
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
