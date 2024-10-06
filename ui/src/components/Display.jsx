@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 import { Utils, planetOrbits } from '../functions.js'
+import { useQuery } from 'react-query'
+import { fetchSystem } from '../queries.js'
 
 const PLACEHOLDER_DATA = {
     cameraPos: { x: 0, y: 0, z: 0 },
@@ -26,11 +28,11 @@ const PLACEHOLDER_DATA = {
 
 const PLACEHOLDER_SYSTEM = {
     radii: [5, 1, 3],
-    sectionAngle: Math.PI / 1.5,
+    angles: Math.PI / 1.5,
     sectors: [
-        [{density: 0.1}, {density: 0.2}, {density: 0.3}],
-        [{density: 0.4}, {density: 0.5}, {density: 0.6}],
-        [{density: 0.7}, {density: 0.8}, {density: 0.9}]
+        [{density: 0.9}, {density: 0.8}, {density: 0.7}],
+        [{density: 0.6}, {density: 0.5}, {density: 0.4}],
+        [{density: 0.3}, {density: 0.2}, {density: 0.1}]
     ]
 }
 
@@ -42,6 +44,13 @@ const planets = [
     {name: "Jupiter", color: "orange", radius: 4.4 * 10**-5},
 ]
 
+const getSectorColor = density => {
+    const red = 10 + 200 * density
+    const green = 10 + 200 * density
+    const blue = 44 + 200 * density
+    return [red, green, blue]
+}
+
 const Display = () => {
     const sector = p => {
         let cam;
@@ -50,6 +59,8 @@ const Display = () => {
         let moveSpeed = 5;
         let img;
         let data = currentSector
+
+        p.checkIfSectorView = () => true
 
         p.setup = () => {
             //dummy data
@@ -126,8 +137,10 @@ const Display = () => {
     }
 
     const system = p => {
-        const data = solarSystem
+        const data = solarSystem.data || PLACEHOLDER_SYSTEM
+        console.log(data)
         let zoom = 1
+        p.checkIfSectorView = () => false
 
         p.preload = () => {
             planets && planets.forEach((planet) => {
@@ -158,17 +171,17 @@ const Display = () => {
             const sortedRadii = data.radii.sort((a, b) => b - a);
             data.sectors.slice().reverse().forEach((ring, i) => {
                 ring.forEach((sector, j) => {
-                    p.fill(200 * sector.density + 55, 0, 200 * sector.density + 55);
+                    p.fill(...getSectorColor(sector.density));
                     //check if mouse is on sector
                     const distance = p.dist(p.mouseX, p.mouseY, CENTER_X, CENTER_Y)
                     const angle = (p.TAU + p.atan2(p.mouseY - CENTER_Y, p.mouseX - CENTER_X)) % p.TAU
-                    if (distance < zoom * orreryRadius * sortedRadii[i] / largestCircle && (sortedRadii.length <= i + 1 || distance > zoom * orreryRadius * sortedRadii[i+1] / largestCircle) && angle > data.sectionAngle*j && angle < data.sectionAngle*(j+1)) {
+                    if (distance < zoom * orreryRadius * sortedRadii[i] / largestCircle && (sortedRadii.length <= i + 1 || distance > zoom * orreryRadius * sortedRadii[i+1] / largestCircle) && angle > data.angles*j && angle < data.angles*(j+1)) {
                         p.fill(255, 255, 255);
                         if (p.mouseIsPressed && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
                             setView("sector")
                         }
                     }
-                    p.arc(CENTER_X, CENTER_Y, zoom * orreryRadius * sortedRadii[i] / largestCircle, zoom * orreryRadius * sortedRadii[i] / largestCircle, data.sectionAngle*j, data.sectionAngle*(j+1));
+                    p.arc(CENTER_X, CENTER_Y, zoom * orreryRadius * sortedRadii[i] / largestCircle, zoom * orreryRadius * sortedRadii[i] / largestCircle, data.angles*j, data.angles*(j+1));
                 })
             })
             const positions = planetOrbits(p.frameCount)
@@ -187,41 +200,29 @@ const Display = () => {
     const [myP5, setMyP5] = useState(null)
     const ref = useRef()
     const checkFirstRender = useRef(true)
-    const [view, setView] = useState('sector')
-    const [solarSystem, setSolarSystem] = useState({})
+    const [view, setView] = useState('system')
     const [currentSector, setCurrentSector] = useState({})
     //const [zoom, setZoom] = useState(1)
 
+    const solarSystem = useQuery("system", fetchSystem)
+
     useEffect(() => {
-        switch (view) {
-            case "system":
-                // solar system api call
-                setSolarSystem({...PLACEHOLDER_SYSTEM, rehydrate: !PLACEHOLDER_SYSTEM.rehydrate})
-                break;
-            case "sector":
-                // sector api call
-                console.log("called")
-                setCurrentSector({...PLACEHOLDER_DATA, rehydrate: !PLACEHOLDER_DATA.rehydrate})
-                break;
-            default:
-                setMyP5(null)
+        if (solarSystem.data && view === "system" && (!myP5 || myP5.checkIfSectorView())) {
+            myP5 && myP5.remove()
+            setMyP5(new p5(system, ref.current))
         }
-    }, [view])
+    }, [solarSystem.data, view]);
 
     useEffect(() => {
         if(checkFirstRender.current){
             checkFirstRender.current = false
             return
         }
-        myP5 && myP5.remove()
-        setMyP5(new p5(system, ref.current))
-    }, [solarSystem])
-
-    useEffect(() => {
-        console.log("sector useeffect called")
-        myP5 && myP5.remove()
-        setMyP5(new p5(sector, ref.current))
-    }, [currentSector])
+        if(view === "sector") {
+            myP5 && myP5.remove()
+            setMyP5(new p5(sector, ref.current))
+        }
+    }, [currentSector, view])
 
     return <>
         <div className="simulator-container">
