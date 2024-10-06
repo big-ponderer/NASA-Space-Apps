@@ -74,16 +74,25 @@ const Display = () => {
             let currentZ = 0;
             data.asteroids && data.asteroids.forEach(asteroid => {
                 if (asteroid.position) {
+                    //detect which asteroid is being looked at if any
+                    const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
+                    const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
+                    const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
+                    if (/*distance < 50 && */angle > asteroidAngle - p.PI / 8 && angle < asteroidAngle + p.PI / 8) {
+                        setActiveAsteroid(asteroid.position[0])
+                    } else {
+                        setActiveAsteroid(null)
+                    }
                     currentX = Math.round(asteroid.position[0]) - currentX;
                     currentY = Math.round(asteroid.position[1]) - currentY;
                     currentZ = Math.round(asteroid.position[2]) - currentZ;
                     p.translate(currentX, currentY, currentZ);
                     p.sphere(asteroid.radius);
                     p.translate(-currentX, -currentY, -currentZ);
-                    if(asteroid.velocity) {
+                    if (asteroid.velocity) {
                         console.log(asteroid.velocity)
-                        const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10**10)
-                        const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10**10)
+                        const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10 ** 10)
+                        const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10 ** 10)
                         p.strokeWeight(20)
                         p.stroke(255)
                         p.smooth()
@@ -158,6 +167,7 @@ const Display = () => {
     const [myP5, setMyP5] = useState(null)
     const ref = useRef()
     const [view, setView] = useState('system')
+    const [activeAsteroid, setActiveAsteroid] = useState(null)
     const [currentID, setCurrentID] = useState([0, 0])
 
     const solarSystem = useQuery("system", fetchSystem)
@@ -183,10 +193,17 @@ const Display = () => {
     }, [solarSystem.data, view]);
 
     return <>
+        <header className="header">
+            <h1 className="title">{activeAsteroid && "Now Observing:"}  {activeAsteroid || "Orrery"}</h1>
+            <p className="subtitle">use your cursor to look around. press W to move forard and S to move backward</p>
+        </header>
+
         <div className="simulator-container">
             <div id="orrery" ref={ref} style={{ height: "100%" }} />
         </div>
+
         <p />
+
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
     </>
