@@ -22,10 +22,13 @@ const getSectorColor = density => {
     return [red, green, blue]
 }
 
-const renderSector = (data, p, setActiveAsteroid, model) => {
+const renderSector = (data, p, setActiveAsteroid, models) => {
     p.push()
-    data.asteroids && data.asteroids.forEach(asteroid => {
-        if (asteroid.position && model) {
+    data.asteroids && data.asteroids.forEach((asteroid,i) => {
+        if (asteroid.position && models) {
+            //models take turns
+            console.log(i%models.length)
+            const model = models[i%models.length]
             //detect which asteroid is being looked at if any
             const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
             const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
@@ -57,7 +60,7 @@ const renderSector = (data, p, setActiveAsteroid, model) => {
 const Display = () => {
     const sector = p => {
         let cam;
-        let asteroidSTL;
+        let asteroidModels;
         let angleX = 0;
         let angleY = 0;
         let moveSpeed = 0.01;
@@ -75,7 +78,7 @@ const Display = () => {
         p.inSystemView = () => false
 
         p.preload = () => {
-            asteroidSTL = p.loadModel('asteroid1.stl');
+            asteroidModels = [1,2,3].map(i => p.loadModel(`asteroid${i}.stl`))
         }
 
         p.setup = () => {
@@ -90,6 +93,7 @@ const Display = () => {
             console.log(cam.eyeZ)
             p.noCursor();
             console.log(data)
+            console.log(asteroidModels)
         }
 
         p.draw = () => {
@@ -132,7 +136,7 @@ const Display = () => {
             p.push();
             p.noStroke();
             //asteroid color
-            renderSector(data, p, setActiveAsteroid, asteroidSTL);
+            renderSector(data, p, setActiveAsteroid, asteroidModels);
             neighboringSectors.forEach(sector => {renderSector(sector, p, setActiveAsteroid)});
             p.pop();
         }
