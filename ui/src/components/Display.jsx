@@ -123,7 +123,7 @@ const Display = () => {
             p.background(10, 10, 44);
             const orreryRadius = 10//0.9 * Math.min(p.displayHeight, p.displayWidth) / 4;
             console.log(p.displayWidth, p.displayHeight)
-            p.circle(p.displayWidth/2, p.displayHeight/2, orreryRadius);
+            p.circle(orreryRadius, p.displayWidth/2, p.displayHeight/2);
         }
     }
 

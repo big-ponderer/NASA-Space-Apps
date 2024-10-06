@@ -30,12 +30,11 @@ export function planetOrbits(t) {
     ];
 
     const G = 2.959122082855911e-4; // AU^3 / (kg * day^2)
-    const M_sun = 1.989e30; // kg
     const positionVectors = [];
 
     elements.forEach(planet => {
         // Calculate mean motion (n)
-        const n = Math.sqrt(G * M_sun / Math.pow(planet.a, 3));
+        const n = Math.sqrt(G / Math.pow(planet.a, 3));
         // Mean anomaly at time t
         const M_t = planet.M0 + n * t;
         // Solve for eccentric anomaly E_t using Newton's method
