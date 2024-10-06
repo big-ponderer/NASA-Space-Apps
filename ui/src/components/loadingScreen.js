@@ -18,7 +18,7 @@ export default function loadingScreen(p) {
     }
 
     p.draw = () => {
-        p.background(10, 10, 44, 50);
+        p.background(3, 3, 11, 50);
 
         const acc = 0.1
 

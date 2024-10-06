@@ -14,9 +14,9 @@ const planets = [
 ]
 
 const getSectorColor = density => {
-    const red = 5 + 20 * density
-    const green = 5 + 20 * density
-    const blue = 22 + 20 * density
+    const red = 3 + 20 * density
+    const green = 3 + 20 * density
+    const blue = 11 + 20 * density
     return [red, green, blue]
 }
 
