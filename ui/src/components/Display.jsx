@@ -14,9 +14,9 @@ const planets = [
 ]
 
 const getSectorColor = density => {
-    const red = 10 + 20 * density
-    const green = 10 + 20 * density
-    const blue = 44 + 20 * density
+    const red = 5 + 20 * density
+    const green = 5 + 20 * density
+    const blue = 22 + 20 * density
     return [red, green, blue]
 }
 
@@ -97,7 +97,7 @@ const Display = () => {
             p.perspective(fov, aspect, near, far);
 
             //space purple
-            p.background(10, 10, 44);
+            p.background(3, 3, 11);
             p.ambientLight(50, 50, 50);
             p.directionalLight(100, 100, 100, 0, 0, -1);
             p.pointLight(150, 150, 150, 100, 100, 200);
@@ -159,7 +159,7 @@ const Display = () => {
             }
 
             p.ellipseMode(p.RADIUS)
-            p.background(10, 10, 44);
+            p.background(3, 3, 11);
             const orreryRadius = 0.9 * Math.min(p.height, p.width) / 2;
             const CENTER_X = p.width / 2;
             const CENTER_Y = p.height / 2;
