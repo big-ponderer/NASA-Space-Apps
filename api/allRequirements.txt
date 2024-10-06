@@ -1,4 +1,6 @@
 fastapi[all]
 uvicorn[all]
 numpy[all]
-pandas[all]
+pandas
+tqdm
+requests
