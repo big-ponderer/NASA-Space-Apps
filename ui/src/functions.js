@@ -20,6 +20,29 @@ function keplerNewtonsMethod(M, e, tol = 1e-6, maxIter = 1000) {
 
     return E;
 }
+export function niceData(asteroid){
+    x = ""
+    if(asteroid.mass){
+        x += "Mass: " + asteroid.mass + " kg\n"
+    }
+    if (asteroid.radius){
+        x += "Radius: " + asteroid.radius + " km\n"
+    }
+    if (asteroid.period){
+        x += "Period: " + asteroid.period + " years\n"
+    }
+    if (asteroid.intrestRez){
+        x += "Intresting Resources: " + asteroid.intrestRez + "\n"
+    }
+    if (asteroid.hazardous){
+        return dupe.png , x}
+    else if (asteroid.nearEarth){
+        return dupe1.png , x
+    }
+    return dupe2.png , x
+    
+}
+
 
 export function planetOrbits(t) {
     const elements = [
