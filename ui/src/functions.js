@@ -22,19 +22,19 @@ function keplerNewtonsMethod(M, e, tol = 1e-6, maxIter = 1000) {
 }
 export function niceData(asteroid){
     let x = ""
-    if(asteroid.mass){
+    if(asteroid && asteroid.mass){
         x += "Mass: " + asteroid.mass + " kg\n"
     }
-    if (asteroid.radius){
+    if (asteroid && asteroid.radius){
         x += "Radius: " + asteroid.radius + " km\n"
     }
-    if (asteroid.period){
+    if (asteroid && asteroid.period){
         x += "Period: " + asteroid.period + " years\n"
     }
-    if (asteroid.intrestRez){
+    if (asteroid && asteroid.intrestRez){
         x += "Intresting Resources: " + asteroid.intrestRez + "\n"
     }
-    if (asteroid.hazardous){
+    if (asteroid && asteroid.hazardous){
         return "dupe.png" , x}
     else if (asteroid.nearEarth){
         return "dupe1.png" , x
