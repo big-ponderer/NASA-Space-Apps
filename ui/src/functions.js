@@ -35,11 +35,12 @@ export function niceData(asteroid){
         x += "Intresting Resources: " + asteroid.intrestRez + "\n"
     }
     if (asteroid && asteroid.hazardous){
-        return "dupe.png" , x}
-    else if (asteroid.nearEarth){
-        return "dupe1.png" , x
+        return ["dupe.png", x]
     }
-    return "dupe2.png" , x
+    else if (asteroid.nearEarth){
+        return ["dupe1.png" , x]
+    }
+    return ["dupe2.png" , x]
     
 }
 
