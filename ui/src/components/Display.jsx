@@ -265,11 +265,17 @@ const Display = () => {
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
         <img
-            src= {niceData(currentAsteroid)[0]}
+            src= {niceData(currentAsteroid)['']}
             className={`centered-image ${popupOpen ? '' : 'hidden'}`}
         />
-        {currentAsteroid && niceData(currentAsteroid)[1] /*replace thi with your function*/} 
-
+        {currentAsteroid && <table className="sick-table">
+            <tr>
+                {Object.keys(niceData(currentAsteroid)).map(key => <th>{key}</th>)}   
+            </tr>
+            <tr>
+                {Object.values(niceData(currentAsteroid)).map(key => <th>{key}</th>)}   
+            </tr>    
+        </table>} 
     </>
 }
 
