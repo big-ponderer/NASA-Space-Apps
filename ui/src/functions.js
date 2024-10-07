@@ -37,7 +37,7 @@ export function niceData(asteroid){
     if (asteroid && asteroid.hazardous){
         return ["dupe.png", x]
     }
-    else if (asteroid.nearEarth){
+    else if (asteroid && asteroid.nearEarth){
         return ["dupe1.png" , x]
     }
     return ["dupe2.png" , x]
