@@ -270,10 +270,10 @@ const Display = () => {
         />
         {currentAsteroid && <table className="sick-table">
             <tr>
-                {Object.keys(niceData(currentAsteroid)).map(key => <th>{key}</th>)}   
+                {Object.keys(niceData(currentAsteroid)).map(key => (key !== "img" && <th>{key}</th>))}   
             </tr>
             <tr>
-                {Object.values(niceData(currentAsteroid)).map(key => <th>{key}</th>)}   
+                {Object.keys(niceData(currentAsteroid)).map(key => (key !== "img" && <th>{niceData(currentAsteroid)[key]}</th>))}   
             </tr>    
         </table>} 
     </>
