@@ -79,6 +79,7 @@ export function planetOrbits(t) {
         // Append position to list
         positionVectors[planet.name] = [x, y]
     });
+    positionVectors["Sun"] = [0, 0]
 
     return positionVectors;
 }

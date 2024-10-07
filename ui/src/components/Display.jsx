@@ -13,6 +13,7 @@ const planets = [
     { name: "Earth", color: "blue", radius: 4.2 * 10 ** -5 },
     { name: "Mars", color: "red", radius: 2.2 * 10 ** -5 },
     { name: "Jupiter", color: "orange", radius: 4.4 * 10 ** -5 },
+    { name: "Sun", color: "yellow", radius: 5*10**-5},
 ]
 
 const getSectorColor = density => {
@@ -150,6 +151,7 @@ const Display = () => {
         }
 
         p.draw = () => {
+            p.imageMode(p.CENTER)
             if (p.keyIsDown(87)) {
                 zoom += 0.01
             }
@@ -265,7 +267,7 @@ const Display = () => {
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
         <img
-            src= {niceData(currentAsteroid)['']}
+            src= {niceData(currentAsteroid)['img']}
             className={`centered-image ${popupOpen ? '' : 'hidden'}`}
         />
         {currentAsteroid && <table className="sick-table">
