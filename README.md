@@ -44,4 +44,4 @@ To set up and run Big Rolly, follow these steps:
 
 ## Usage
 
-Once both the API and UI are running, you can access the interactive digital orrery through your web browser. Explore the vastness of our solar system and gain insights into the density and distribution of asteroids in a fun and educational manner!
+Once both the API and UI are running, you can access the interactive digital orrery through your web browser. Have fun!
