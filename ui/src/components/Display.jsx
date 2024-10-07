@@ -205,6 +205,7 @@ const Display = () => {
     const [currentID, setCurrentID] = useState([0, 0])
     const [cameraPos, setCameraPos] = useState({ x: 0, y: 0, z: 0 })
     const [popupOpen, setPopupOpen] = useState(false)
+    const [currentAsteroid, setCurrentAsteroid] = useState(null)
     const solarSystem = useQuery("system", fetchSystem)
 
     useEffect(() => {
@@ -238,19 +239,40 @@ const Display = () => {
         return () => window.removeEventListener("keydown", handleKeyDown)
     }, [popupOpen])
 
+    const navigateToClosestAsteroid = () => {
+        const camera = myP5.getCamera()
+        if (!camera) {
+            return
+        }
+        const currentCameraPos = [ camera.eyeX, camera.eyeY, camera.eyeZ ]
+        const closestAsteroid = solarSystem.data.sectors[currentID[0]][currentID[1]].asteroids.reduce((closest, asteroid) => {
+            const distance = Math.sqrt(asteroid.position.reduce((acc, coord, i) => acc + (coord - currentCameraPos[i]) ** 2, 0))
+            return distance < closest.distance ? { distance, asteroid } : closest
+        }, { distance: Infinity, asteroid: null }).asteroid
+        if (closestAsteroid) {
+            camera.setPosition(...closestAsteroid.position)
+            camera.lookAt(0,0,0)
+            setCurrentAsteroid(closestAsteroid)
+        }
+    }
+
     return <>
         <div className="simulator-container">
             <div id="orrery" ref={ref} style={{ height: "100%" }} />
         </div>
         <p />
+        {view === "sector" && <button className="button" onClick={navigateToClosestAsteroid}>NAVIGATE TO CLOSEST</button>}
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
         <img
             src="dupe.png"
             className={`centered-image ${popupOpen ? '' : 'hidden'}`}
         />
+        {currentAsteroid && niceDataPlaceholder(solarSystem.data)} //replace thi with your function
 
     </>
 }
+
+const niceDataPlaceholder = asteroid => asteroid //replace thi with your function
 
 export default Display;
