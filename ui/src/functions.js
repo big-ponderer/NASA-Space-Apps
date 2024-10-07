@@ -21,7 +21,7 @@ function keplerNewtonsMethod(M, e, tol = 1e-6, maxIter = 1000) {
     return E;
 }
 export function niceData(asteroid){
-    x = ""
+    let x = ""
     if(asteroid.mass){
         x += "Mass: " + asteroid.mass + " kg\n"
     }
