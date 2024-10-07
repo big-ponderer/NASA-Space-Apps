@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
-import { Utils, planetOrbits } from '../functions.js'
+import { Utils, planetOrbits, renderSector, niceData } from '../functions.js'
 import { useQuery } from 'react-query'
 import { fetchSystem } from '../queries.js'
 import loadingScreen from './loadingScreen.js'
@@ -13,6 +13,7 @@ const planets = [
     { name: "Earth", color: "blue", radius: 4.2 * 10 ** -5 },
     { name: "Mars", color: "red", radius: 2.2 * 10 ** -5 },
     { name: "Jupiter", color: "orange", radius: 4.4 * 10 ** -5 },
+    { name: "Sun", color: "yellow", radius: 5*10**-5},
 ]
 
 const getSectorColor = density => {
@@ -22,42 +23,25 @@ const getSectorColor = density => {
     return [red, green, blue]
 }
 
-const renderSector = (data, p, setActiveAsteroid, models) => {
-    p.push()
-    data.asteroids && data.asteroids.forEach((asteroid, i) => {
-        if (asteroid.position && models) {
-            //models take turns
-            console.log(i % models.length)
-            const model = models[i % models.length]
-            //detect which asteroid is being looked at if any
-            const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
-            const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
-            const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
-            if (/*distance < 50 && */angle > asteroidAngle - p.PI / 8 && angle < asteroidAngle + p.PI / 8) {
-                setActiveAsteroid(asteroid.name)
-            } else {
-                setActiveAsteroid(null)
-            }
-            p.push()
-            p.translate(asteroid.position[0], asteroid.position[1], asteroid.position[2]);
-            //p.noStroke()
-            p.scale((asteroid.radius / MODEL_SIZE) * 5 * 10 ** 5);
-            p.model(model);
-            p.pop()
-            /*if (asteroid.velocity) {
-                const point1 = asteroid.position.map((coord, i) => coord - asteroid.velocity[i] * 10 ** 10)
-                const point2 = asteroid.position.map((coord, i) => coord + asteroid.velocity[i] * 10 ** 10)
-                p.strokeWeight(asteroid.radius * 5 * 10 ** 2)
-                p.stroke(255)
-                p.smooth()
-                p.line(...point1, ...point2)
-            }*/
-        }
-    })
-    p.pop()
-}
-
 const Display = () => {
+    const handleCollisions = asteroid => {
+        if (view !== "sector" || !myP5 || myP5.inSystemView()) {
+            return
+        }
+        const camera = myP5.getCamera()
+        if (!camera) {
+            return
+        }
+        const currentCameraPos = [ camera.eyeX, camera.eyeY, camera.eyeZ ]
+        const asteroidPos = asteroid.position
+        if (Math.sqrt(asteroidPos.reduce((acc, coord, i) => acc + (coord - currentCameraPos[i]) ** 2, 0)) < asteroid.radius) {
+            console.log("COLLIDING")
+            setPopupOpen(true)
+        } else {
+            setPopupOpen(false)
+        }
+    }
+
     const sector = p => {
         let cam;
         let asteroidModels;
@@ -72,9 +56,10 @@ const Display = () => {
                     neighboringSectors.push(solarSystem.data.sectors[i][j])
                 }
             }
-
         }
         p.inSystemView = () => false
+
+        p.getCamera = () => cam
 
         p.preload = () => {
             asteroidModels = [1, 2, 3].map(i => p.loadModel(`asteroid${i}.stl`))
@@ -135,8 +120,8 @@ const Display = () => {
             p.push();
             p.noStroke();
             //asteroid color
-            renderSector(data, p, setActiveAsteroid, asteroidModels);
-            neighboringSectors.forEach(sector => { renderSector(sector, p, setActiveAsteroid) });
+            renderSector(data, p, asteroidModels, handleCollisions);
+            neighboringSectors.forEach(sector => { renderSector(sector, p, asteroidModels, handleCollisions) });
             p.pop();
         }
     }
@@ -166,6 +151,7 @@ const Display = () => {
         }
 
         p.draw = () => {
+            p.imageMode(p.CENTER)
             if (p.keyIsDown(87)) {
                 zoom += 0.01
             }
@@ -220,8 +206,8 @@ const Display = () => {
     const [view, setView] = useState('system')
     const [currentID, setCurrentID] = useState([0, 0])
     const [cameraPos, setCameraPos] = useState({ x: 0, y: 0, z: 0 })
-    const [activeAsteroid, setActiveAsteroid] = useState(null)
     const [popupOpen, setPopupOpen] = useState(false)
+    const [currentAsteroid, setCurrentAsteroid] = useState(null)
     const solarSystem = useQuery("system", fetchSystem)
 
     useEffect(() => {
@@ -255,19 +241,46 @@ const Display = () => {
         return () => window.removeEventListener("keydown", handleKeyDown)
     }, [popupOpen])
 
+    const navigateToClosestAsteroid = () => {
+        const camera = myP5.getCamera()
+        if (!camera) {
+            return
+        }
+        const currentCameraPos = [ camera.eyeX, camera.eyeY, camera.eyeZ ]
+        const closestAsteroid = solarSystem.data.sectors[currentID[0]][currentID[1]].asteroids.reduce((closest, asteroid) => {
+            const distance = Math.sqrt(asteroid.position.reduce((acc, coord, i) => acc + (coord - currentCameraPos[i]) ** 2, 0))
+            return distance < closest.distance ? { distance, asteroid } : closest
+        }, { distance: Infinity, asteroid: null }).asteroid
+        if (closestAsteroid) {
+            camera.setPosition(...closestAsteroid.position)
+            camera.lookAt(0,0,0)
+            setCurrentAsteroid(closestAsteroid)
+        }
+    }
+
     return <>
         <div className="simulator-container">
             <div id="orrery" ref={ref} style={{ height: "100%" }} />
         </div>
         <p />
+        {view === "sector" && <button className="button" onClick={navigateToClosestAsteroid}>NAVIGATE TO CLOSEST</button>}
         {view === "sector" && <button className="button" onClick={() => setView("system")}>EXIT</button>}
         {/*view === "system" && <input className="slider" type="range" min={0.5} max={2} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />*/}
         <img
-            src="dupe.png"
+            src= {niceData(currentAsteroid)['img']}
             className={`centered-image ${popupOpen ? '' : 'hidden'}`}
         />
-
+        {currentAsteroid && <table className="sick-table">
+            <tr>
+                {Object.keys(niceData(currentAsteroid)).map(key => (key !== "img" && <th>{key}</th>))}   
+            </tr>
+            <tr>
+                {Object.keys(niceData(currentAsteroid)).map(key => (key !== "img" && <th>{niceData(currentAsteroid)[key]}</th>))}   
+            </tr>    
+        </table>} 
     </>
 }
+
+const niceDataPlaceholder = asteroid => asteroid //replace thi with your function
 
 export default Display;
