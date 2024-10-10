@@ -1,4 +1,3 @@
-import p5 from "p5"
 function keplerNewtonsMethod(M, e, tol = 1e-6, maxIter = 1000) {
     // Initial guess for E (starting with the mean anomaly)
     let E = e < 0.8 ? M : Math.PI;
@@ -123,9 +122,6 @@ export const renderSector = (data, p, models, handleCollisions) => {
             }
             asteroid.rotation.angle += asteroid.rotation.speed;
 
-            const distance = p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2)
-            const angle = (p.TAU + p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2)) % p.TAU
-            const asteroidAngle = (p.TAU + p.atan2(asteroid.position[1], asteroid.position[0])) % p.TAU
             p.push()
             p.translate(asteroid.position[0], asteroid.position[1], asteroid.position[2]);
 

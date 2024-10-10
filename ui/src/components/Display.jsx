@@ -5,7 +5,6 @@ import { useQuery } from 'react-query'
 import { fetchSystem } from '../queries.js'
 import loadingScreen from './loadingScreen.js'
 import Star from "./star.js"
-const MODEL_SIZE = 200
 
 const planets = [
     { name: "Mercury", color: "gray", radius: 1.6 * 10 ** -5 }, //in AU
@@ -280,7 +279,5 @@ const Display = () => {
         </table>} 
     </>
 }
-
-const niceDataPlaceholder = asteroid => asteroid //replace thi with your function
 
 export default Display;

@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import Display from './components/Display';
 import { QueryClient, QueryClientProvider } from 'react-query'
