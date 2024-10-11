@@ -10,9 +10,6 @@ Units for angles are in degrees
 """
 
         
-#make an array of sectors
-# mainArray = [[indivSect([i,j]) for i in range(int(360/testSector.waveTheta))] for j in range( int(len(testSector.getCircleList()))-1)]
-
 #The asteroid class
 class Asteroid:
     def __init__(self, name, diameter, mass, period, displayName, NEO, PHA ):
@@ -114,11 +111,7 @@ class AllAsteroids:
                     print(asteroid.sector, "********", asteroid.displayName)
                     
                     self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
-                    # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcArea(self.testSector)
-                    # self.mainArray[asteroid.sector[0]][asteroid.sector[1]].calcDensity()
 
-
-        # print("main file****", self.mainArray)
         return self.mainArray
 
 
@@ -158,60 +151,3 @@ class indivSect:
         
     def calcDensity(self):
          self.density = len(self.asteroidSectorList) / self.area
-
-
-# async def getSolarSystem():
-
-#     asteroid = Asteroid()
-
-#     #Change this to change asteroid file
-#     asteroidListCSV = pd.read_csv("sbdb_query_results-2.csv")
-
-#     # testSector = sector([0, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 2, 10], 40) 
-
-#     print(asteroidListCSV.head())
-
-#     #create the first iteration of the asteroid list, without any parameters
-#     asteroidList = []
-
-#     # for index, row in asteroidListCSV.iterrows():
-#     #     asteroid = Asteroid(
-#     #         name=row['full_name'],
-#     #         diameter=row['diameter'],
-#     #         mass=row['GM'],
-#     #         period=row['per_y'],
-#     #         displayName=row['name'],
-#     #         NEO = row['neo'] == 'Y',
-#     #         PHA = row['pha'] == 'Y'
-#     #     )
-#     #     asteroidList.append(asteroid)
-
-#     #asteroidList[0].printData()
-
-#     #Do Leo and Kaushik's stuff here (call the API and get data), as well as define the sector of each asteroid
-#     #Add the asteroid to the appropriate sector
-#     # for asteroid in asteroidList:
-#     #     #call the API and get data
-#     #     resp = await get_asteroid(asteroid.displayName)
-
-#     #     #print(resp[0])
-#     #     #print(resp[1])
-#     #     if resp[0] and resp[1]:
-#     #         asteroid.sunCoords = resp[0][0]
-#     #         asteroid.velocity = resp[1][0]
-#     #         print("coords: ", asteroid.sunCoords, "velocity: ", asteroid.velocity, )
-#     #         #asteroid.determineSector(testSector)
-#     #         #print(asteroid.sector, "********", asteroid.displayName)
-            
-#     #         #mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
-
-
-#     #process area and density for each sector
-#     # for i in range (0, len(testSector.getCircleList())-1):
-#     #     for j in range (0, int(360/testSector.waveTheta)) :
-#     #         mainArray[i][j].calcArea(testSector)
-#     #         mainArray[i][j].calcDensity()
-
-    # return mainArray
-        
-#getSolarSystem()

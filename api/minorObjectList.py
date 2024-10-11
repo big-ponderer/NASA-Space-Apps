@@ -30,8 +30,6 @@ class Asteroid:
 #Change this to change asteroid file
 asteroidListCSV = pd.read_csv("sbdb_query_results.csv")
 
-print(asteroidListCSV.head())
-
 #main data structure
 asteroidList = []
 
@@ -58,7 +56,5 @@ def updateAllCoords():
         if response.json()["vectors"]:
             
             asteroid.sunCoords = response.json()["vectors"][0]
-        else:
-            print(asteroid.printData()) #debug
             
 updateAllCoords()

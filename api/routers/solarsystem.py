@@ -14,7 +14,7 @@ async def read_item():
     try:
         asteroids = AllAsteroids("coolerAsteroids.csv", preload=True)
         mainArray =  await asteroids.updateAllCoords(preload=True)
-        #print(mainArray)
+        
         sectors = []
         for i in range(len(mainArray)):
             one_layer = []
@@ -48,14 +48,13 @@ async def read_item():
                 output_dic["cameraPos"] = {"x":cam_pos[0], "y":cam_pos[1], "z":cam_pos[2]}
                 one_layer.append(output_dic)
             sectors.append(one_layer)
-        #print(sectors, "working")
-        #print(type(sectors))
+
         ret = {
             "radii": asteroids.testSector.circleList,
             "angles": asteroids.testSector.waveTheta*2*np.pi/360,
             "sectors": sectors
         }
-        #print(ret)
+
         return ret
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
