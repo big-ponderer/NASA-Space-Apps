@@ -93,7 +93,7 @@ class AllAsteroids:
                 asteroid.sunCoords = [row["Sun Coords X"], row["Sun Coords Y"], row["Sun Coords Z"]]
                 asteroid.velocity = [row["Velocity X"], row["Velocity Y"], row["Velocity Z"]]
                 asteroid.determineSector(self.testSector)
-                print(asteroid.sector, "********", asteroid.displayName)
+
                 self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
 
         else:
@@ -105,10 +105,7 @@ class AllAsteroids:
                 if resp[0] and resp[1]:
                     asteroid.sunCoords = resp[0][0]
                     asteroid.velocity = resp[1][0]
-                    print("coords: ", asteroid.sunCoords, "velocity: ", asteroid.velocity)
-                    asteroid.printData()
                     asteroid.determineSector(self.testSector)
-                    print(asteroid.sector, "********", asteroid.displayName)
                     
                     self.mainArray[asteroid.sector[0]][asteroid.sector[1]].addAsteroid(asteroid)
 

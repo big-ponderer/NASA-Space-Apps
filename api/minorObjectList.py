@@ -46,8 +46,6 @@ for index, row in asteroidListCSV.iterrows():
     )
     asteroidList.append(asteroid)
 
-asteroidList[0].printData()
-
 
 def updateAllCoords():
     for asteroid in asteroidList:
