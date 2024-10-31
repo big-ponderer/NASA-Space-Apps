@@ -27,7 +27,7 @@ export function niceData(asteroid){
     }
     if (asteroid && asteroid.radius){
         //x += "Radius: " + asteroid.radius + " km\n"
-        data["Radius (km)"] = asteroid.radius
+        data["Radius (km)"] = asteroid.radius/6.68459e-9
     }
     if (asteroid && asteroid.period){
         //x += "Period: " + asteroid.period + " years\n"
