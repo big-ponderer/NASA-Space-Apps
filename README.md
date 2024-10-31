@@ -43,10 +43,10 @@ To set up and run Big Rolly, follow these steps:
    ```
 
 ## Usage
-Click on a sector to view all of the asteroids in it
-Move around with the mouse and WASD
-Right click to stop using the mouse, and press "navigate to closest" to see the data of the nearest asteroid
-Press P to toggle space ship view
-Hit exit to go back to sector view
-Have Fun!!!!
-Once both the API and UI are running, you can access the interactive digital orrery through your web browser. Have fun!
+Click on a sector to view all of the asteroids in it \n
+Move around with the mouse and WASD \n
+Right click to stop using the mouse, and press "navigate to closest" to see the data of the nearest asteroid \n
+Press P to toggle space ship view \n
+Hit exit to go back to sector view \n
+Have Fun!!!! \n
+
