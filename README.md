@@ -22,7 +22,7 @@ To set up and run Big Rolly, follow these steps:
    ```
    Install the necessary dependencies:
    ```bash
-   pip install fastapi uvicorn httpx orjson numpy pandas
+   pip install fastapi uvicorn httpx orjson numpy pandas tqdm
    ```
    Start the API server:
    ```bash
