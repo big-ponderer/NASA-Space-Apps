@@ -5,6 +5,8 @@ Big Rolly is an interactive digital orrery designed for educational purposes, al
 1. **Broad View**: A comprehensive overview of the solar system, displaying the planets from the Sun to Jupiter, along with the density of asteroids in the asteroid belt.
 2. **Detailed View**: A 3D simulation that lets users click into specific sections of the orrery to fly around and explore a rich environment filled with asteroids.
 
+Slides summarizing the project [here](https://docs.google.com/presentation/d/1_g4n6eHRf33w2Qi7Veq0TDcpF_0xMRXXUQOeZ-hN5co/edit?usp=sharing)
+
 ## Project Structure
 
 The project consists of two main subfolders:
